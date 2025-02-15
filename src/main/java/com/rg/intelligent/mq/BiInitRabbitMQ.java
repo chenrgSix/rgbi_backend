@@ -5,7 +5,10 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rg.intelligent.constant.BiMqConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +16,26 @@ import java.util.Map;
  * 用于创建测试程序用到的交换机和队列
  */
 @Slf4j
+@Component
 public class BiInitRabbitMQ {
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+    @Value("${spring.rabbitmq.port}")
+    private Integer port;
 
-    public static void doInit() {
+
+    @PostConstruct
+    public void doInit() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost("localhost");
+            factory.setHost(host);
+            factory.setUsername(username);
+            factory.setPassword(password);
+            factory.setPort(port);
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
             // 声明死信队列
@@ -39,23 +56,4 @@ public class BiInitRabbitMQ {
         }
     }
 
-    //public static void main(String[] args) {
-    //    try {
-    //        ConnectionFactory factory = new ConnectionFactory();
-    //        factory.setHost("localhost");
-    //        //factory.setHost("my_rabbit");
-    //        Connection connection = factory.newConnection();
-    //        Channel channel = connection.createChannel();
-    //        String EXCHANGE_NAME =  BiMqConstant.BI_EXCHANGE_NAME;
-    //        channel.exchangeDeclare(EXCHANGE_NAME, "direct");
-    //
-    //        // 创建队列，随机分配一个队列名称
-    //        String queueName = BiMqConstant.BI_QUEUE_NAME;
-    //        channel.queueDeclare(queueName, true, false, false, null);
-    //        channel.queueBind(queueName, EXCHANGE_NAME,  BiMqConstant.BI_ROUTING_KEY);
-    //    } catch (Exception e) {
-    //
-    //    }
-
-    //}
 }

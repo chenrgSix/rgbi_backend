@@ -1,10 +1,10 @@
 # 数据库初始化
 
 -- 创建库
-create database if not exists rg_bi;
+create database if not exists rg_intelligent;
 
 -- 切换库
-use rg_bi;
+use rg_intelligent;
 
 -- 用户表
 create table if not exists user
@@ -37,3 +37,12 @@ create table if not exists chart
     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete    tinyint  default 0                 not null comment '是否删除'
 ) comment '图表信息表' collate = utf8mb4_unicode_ci;
+CREATE TABLE score (
+                       id  bigint auto_increment comment 'id' primary key,
+                       userId bigint(20) NOT NULL,
+                       scoreTotal bigint(20) NOT NULL,
+                       isSign tinyint(4) NOT NULL DEFAULT '0' COMMENT '0表示未签到，1表示已签到',
+                       createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+                       updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+                       isDelete    tinyint  default 0                 not null comment '是否删除'
+)  comment'积分表' collate = utf8mb4_unicode_ci;
