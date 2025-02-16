@@ -23,6 +23,7 @@ import com.rg.intelligent.service.ChartService;
 import com.rg.intelligent.service.UserService;
 import com.rg.intelligent.utils.ExcelUtils;
 import com.rg.intelligent.utils.SqlUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +31,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

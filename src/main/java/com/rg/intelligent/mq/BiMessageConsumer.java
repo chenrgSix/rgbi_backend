@@ -2,6 +2,7 @@ package com.rg.intelligent.mq;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rabbitmq.client.Channel;
+
 import com.rg.intelligent.common.ErrorCode;
 import com.rg.intelligent.constant.BiMqConstant;
 import com.rg.intelligent.constant.ChartConstant;
@@ -17,7 +18,7 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 
 @Component

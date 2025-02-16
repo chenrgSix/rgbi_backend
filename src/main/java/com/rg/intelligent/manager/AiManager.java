@@ -15,15 +15,16 @@ import io.github.briqt.spark4j.model.request.SparkRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 public class AiManager {
-    @Resource
-    private YuCongMingClient yuCongMingClient;
+//    @Resource
+//    private YuCongMingClient yuCongMingClient;
+//    private YuCongMingClient yuCongMingClient;
     @Resource
     private SparkClient sparkClient;
     @Resource
@@ -53,17 +54,21 @@ public class AiManager {
      * @return
      */
     public String doChat(long modelId, String message,Long userId) {
-        DevChatRequest devChatRequest = new DevChatRequest();
-        devChatRequest.setModelId(modelId);
-        devChatRequest.setMessage(message);
-        BaseResponse<DevChatResponse> response = yuCongMingClient.doChat(devChatRequest);
-        if (response == null) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 响应错误");
-        }
-        scoreService.deductPoints(userId, 20L);//调用成功后扣除积分
+        return sendMesToAIUseXingHuo(message,userId);
 
-        return response.getData().getContent();
     }
+//    public String sendMesToAIUseYuCongMi(long modelId, String message,Long userId) {
+//        DevChatRequest devChatRequest = new DevChatRequest();
+//        devChatRequest.setModelId(modelId);
+//        devChatRequest.setMessage(message);
+//        BaseResponse<DevChatResponse> response = yuCongMingClient.doChat(devChatRequest);
+//        if (response == null) {
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 响应错误");
+//        }
+//        scoreService.deductPoints(userId, 20L);//调用成功后扣除积分
+//
+//        return response.getData().getContent();
+//    }
 
     /**
      * 向 AI 发送请求

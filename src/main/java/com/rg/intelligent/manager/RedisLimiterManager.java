@@ -8,7 +8,7 @@ import org.redisson.api.RateType;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * 专门提供 RedisLimiter 限流基础服务的（提供了通用的能力）

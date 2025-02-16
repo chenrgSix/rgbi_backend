@@ -3,7 +3,7 @@ package com.rg.intelligent.mq;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @Component
 public class BiMessageProducer {

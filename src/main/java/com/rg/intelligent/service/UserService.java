@@ -6,8 +6,8 @@ import com.rg.intelligent.model.vo.LoginUserVO;
 import com.rg.intelligent.model.dto.user.UserQueryRequest;
 import com.rg.intelligent.model.entity.User;
 import com.rg.intelligent.model.vo.UserVO;
-
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**

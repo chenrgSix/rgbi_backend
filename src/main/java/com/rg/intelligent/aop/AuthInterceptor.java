@@ -6,8 +6,9 @@ import com.rg.intelligent.exception.BusinessException;
 import com.rg.intelligent.model.entity.User;
 import com.rg.intelligent.model.enums.UserRoleEnum;
 import com.rg.intelligent.service.UserService;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
