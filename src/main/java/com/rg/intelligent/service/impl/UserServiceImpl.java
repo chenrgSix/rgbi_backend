@@ -144,6 +144,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return currentUser;
     }
 
+    @Override
+    public Boolean checkUserPoints(HttpServletRequest request) {
+        User loginUser = getLoginUser(request);
+        return checkUserPoints(loginUser);
+    }
+    @Override
+    public Boolean checkUserPoints(User user) {
+        Long userPoints = scoreService.getUserPoints(user.getId());
+        return userPoints != null && userPoints > 0;
+    }
     /**
      * 获取当前登录用户（允许未登录）
      *

@@ -44,7 +44,20 @@ public interface UserService extends IService<User> {
      * @return
      */
     User getLoginUser(HttpServletRequest request);
-
+    /**
+     * 检查用户积分是否充足
+     *
+     * @param request
+     * @return
+     */
+    Boolean checkUserPoints(HttpServletRequest request);
+    /**
+     * 检查用户积分是否充足
+     *
+     * @param user
+     * @return
+     */
+    Boolean checkUserPoints(User user);
     /**
      * 获取当前登录用户（允许未登录）
      *

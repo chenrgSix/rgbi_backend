@@ -27,14 +27,26 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.metadata.ChatResponseMetadata;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
+import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import reactor.core.publisher.Flux;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -58,9 +70,21 @@ public class ChartController {
     @Resource
     private RedisLimiterManager redisLimiterManager;
     @Resource
-    private BiMessageProducer biMessageProducer;
-    // region 增删改查
+    private ZhiPuAiChatModel chatModel;
 
+
+    @GetMapping("/ai/generate")
+    public String generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
+        ChatResponse call = this.chatModel.call(new Prompt(
+                message + " 在回答的结尾要加一句你好棒棒",
+                ZhiPuAiChatOptions.builder()
+                        .temperature(0.5)
+                        .build()
+        ));
+
+        AssistantMessage output = call.getResult().getOutput();
+        return output.getText();
+    }
 
 
     /**
@@ -175,19 +199,10 @@ public class ChartController {
         final List<String> validFileSuffixList = Arrays.asList("xlsx","xls","csv");
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
         User loginUser = userService.getLoginUser(request);
+        Boolean checkResult = userService.checkUserPoints(loginUser);
+        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-
-        //final String prompt = "你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容：\n" +
-        //        "分析需求：\n" +
-        //        "{数据分析的需求或者目标}\n" +
-        //        "原始数据：\n" +
-        //        "{csv格式的原始数据，用,作为分隔符}\n" +
-        //        "请根据这两部分内容，按照以下指定格式生成内容（此外不要输出任何多余的开头、结尾、注释）\n" +
-        //        "【【【【【\n" +
-        //        "{前端 Echarts V5 的 option 配置对象js代码，合理地将数据进行可视化，不要生成任何多余的内容，比如注释}\n" +
-        //        "【【【【【\n" +
-        //        "{明确的数据分析结论、越详细越好，不要生成多余的注释}";
         long biModelId = 1659171950288818178L;
         // 构造用户输入
         StringBuilder userInput = new StringBuilder();
@@ -263,6 +278,8 @@ public class ChartController {
         validFile(multipartFile);
         //登录用户获取
         User loginUser = userService.getLoginUser(request);
+        Boolean checkResult = userService.checkUserPoints(loginUser);
+        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
         genChartByAiRequest.setLoginUser(loginUser);
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
@@ -305,6 +322,8 @@ public class ChartController {
     public BaseResponse<BiResponse> retryGenChart(@RequestBody final ChartRetryRequest chartQueryRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(chartQueryRequest == null, ErrorCode.PARAMS_ERROR);
         User loginUser = userService.getLoginUser(request);
+        Boolean checkResult = userService.checkUserPoints(loginUser);
+        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
         ChartRetry chartRetry = new ChartRetry(chartQueryRequest.getId(), loginUser);
         BiResponse chart = chartService.retryGenChart(chartRetry);
         return ResultUtils.success(chart);

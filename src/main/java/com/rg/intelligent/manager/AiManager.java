@@ -1,34 +1,35 @@
 package com.rg.intelligent.manager;
 
-import com.rg.intelligent.exception.BusinessException;
 import com.rg.intelligent.service.ScoreService;
-import com.rg.intelligent.common.ErrorCode;
-import com.yupi.yucongming.dev.client.YuCongMingClient;
-import com.yupi.yucongming.dev.common.BaseResponse;
-import com.yupi.yucongming.dev.model.DevChatRequest;
-import com.yupi.yucongming.dev.model.DevChatResponse;
 import io.github.briqt.spark4j.SparkClient;
 import io.github.briqt.spark4j.constant.SparkApiVersion;
 import io.github.briqt.spark4j.model.SparkMessage;
 import io.github.briqt.spark4j.model.SparkSyncChatResponse;
 import io.github.briqt.spark4j.model.request.SparkRequest;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
+import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 public class AiManager {
-//    @Resource
+    //    @Resource
 //    private YuCongMingClient yuCongMingClient;
 //    private YuCongMingClient yuCongMingClient;
     @Resource
     private SparkClient sparkClient;
     @Resource
     private ScoreService scoreService;
+    @Resource
+    private ZhiPuAiChatModel zhiPuAiChatModel;
     /**
      * AI 生成问题的预设条件
      */
@@ -53,29 +54,39 @@ public class AiManager {
      * @param message
      * @return
      */
-    public String doChat(long modelId, String message,Long userId) {
-        return sendMesToAIUseXingHuo(message,userId);
+    public String doChat(long modelId, String message, Long userId) {
+        return sendMesToAIUseZhiPu(message, userId);
+//        return sendMesToAIUseXingHuo(message,userId);
 
     }
-//    public String sendMesToAIUseYuCongMi(long modelId, String message,Long userId) {
-//        DevChatRequest devChatRequest = new DevChatRequest();
-//        devChatRequest.setModelId(modelId);
-//        devChatRequest.setMessage(message);
-//        BaseResponse<DevChatResponse> response = yuCongMingClient.doChat(devChatRequest);
-//        if (response == null) {
-//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 响应错误");
-//        }
-//        scoreService.deductPoints(userId, 20L);//调用成功后扣除积分
-//
-//        return response.getData().getContent();
-//    }
 
     /**
      * 向 AI 发送请求
      *
      * @return
      */
-    public String sendMesToAIUseXingHuo(final String content,Long userId) {
+    public String sendMesToAIUseZhiPu(final String content, Long userId) {
+        //构造请求参数
+        Prompt prompt = new Prompt(PRECONDITION + content, ZhiPuAiChatOptions
+                .builder()
+                .user(userId.toString())
+                .build());
+        // 构造请求
+        ChatResponse call = this.zhiPuAiChatModel.call(prompt);
+        AssistantMessage output = call.getResult().getOutput();
+        String responseContent = output.getText();
+        // 同步调用
+        log.info("智普 AI 返回的结果 {}", responseContent);
+        scoreService.deductPoints(userId, 20L);//调用成功后扣除积分
+        return responseContent;
+    }
+
+    /**
+     * 向 AI 发送请求
+     *
+     * @return
+     */
+    public String sendMesToAIUseXingHuo(final String content, Long userId) {
         List<SparkMessage> messages = new ArrayList<>();
         messages.add(SparkMessage.userContent(content));
         // 构造请求
