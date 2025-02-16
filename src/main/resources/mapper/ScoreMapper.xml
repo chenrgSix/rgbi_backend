@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rg.intelligent.mapper.ScoreMapper">
+<mapper namespace="com.rg.smarts.infrastructure.mapper.ScoreMapper">
 
-    <resultMap id="BaseResultMap" type="com.rg.intelligent.model.entity.Score">
+    <resultMap id="BaseResultMap" type="com.rg.smarts.domain.score.entity.Score">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
             <result property="scoreTotal" column="scoreTotal" jdbcType="BIGINT"/>

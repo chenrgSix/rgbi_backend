@@ -1,0 +1,163 @@
+package com.rg.smarts.domain.user.service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.infrastructure.common.DeleteRequest;
+import com.rg.smarts.interfaces.dto.user.UserQueryRequest;
+import com.rg.smarts.interfaces.dto.user.UserUpdateMyRequest;
+import com.rg.smarts.interfaces.dto.user.UserUpdateRequest;
+import com.rg.smarts.interfaces.vo.LoginUserVO;
+import com.rg.smarts.interfaces.vo.UserVO;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+
+/**
+ * 用户服务
+ */
+public interface UserDomainService{
+
+    /**
+     * 用户注册
+     *
+     * @param userAccount   用户账户
+     * @param userPassword  用户密码
+     * @param checkPassword 校验密码
+     * @return 新用户 id
+     */
+    long userRegister(String userAccount, String userPassword, String checkPassword);
+
+    /**
+     * 用户登录
+     *
+     * @param userAccount  用户账户
+     * @param userPassword 用户密码
+     * @param request
+     * @return 脱敏后的用户信息
+     */
+    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
+
+
+
+    /**
+     * 获取当前登录用户
+     *
+     * @param request
+     * @return
+     */
+    User getLoginUser(HttpServletRequest request);
+
+
+    /**
+     * 获取当前登录用户（允许未登录）
+     *
+     * @param request
+     * @return
+     */
+    User getLoginUserPermitNull(HttpServletRequest request);
+
+    /**
+     * 是否为管理员
+     *
+     * @param request
+     * @return
+     */
+    boolean isAdmin(HttpServletRequest request);
+
+    /**
+     * 是否为管理员
+     *
+     * @param user
+     * @return
+     */
+    boolean isAdmin(User user);
+
+    /**
+     * 用户注销
+     *
+     * @param request
+     * @return
+     */
+    boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 获取脱敏的已登录用户信息
+     *
+     * @return
+     */
+    LoginUserVO getLoginUserVO(User user);
+
+    /**
+     * 获取脱敏的用户信息
+     *
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 获取脱敏的用户信息
+     *
+     * @param userList
+     * @return
+     */
+    List<UserVO> getUserVO(List<User> userList);
+
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest
+     * @return
+     */
+    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+    /**
+     * 删除用户
+     * @param deleteRequest
+     * @return
+     */
+    Boolean deleteUser( DeleteRequest deleteRequest);
+
+    /**
+     * 更新用户
+     * @param userUpdateRequest
+     * @return
+     */
+    Boolean updateUser( UserUpdateRequest userUpdateRequest);
+
+    /**
+     * 根据id获取用户
+     * @param id
+     * @return
+     */
+    User getUserById(long id);
+    /**
+     * 根据id获取脱敏用户
+     * @param id
+     * @return
+     */
+    UserVO getUserByIdVo( long id);
+
+    /**
+     * 分页获取用户列表（仅管理员）
+     * @param current
+     * @param size
+     * @return
+     */
+    Page<User> listUserByPage(long current,long size, QueryWrapper<User> queryWrapper);
+
+    /**
+     *
+     * @param current
+     * @param size
+     * @param queryWrapper
+     * @return
+     */
+    Page<UserVO> listUserVOByPage(long current,long size,QueryWrapper<User> queryWrapper) ;
+
+    Boolean removeById(long id);
+    Boolean updateById(User user);
+
+}
