@@ -1,4 +1,4 @@
-package com.rg.smarts.infrastructure.repository;
+package com.rg.smarts.infrastructure.repository.user;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rg.smarts.domain.user.entity.User;

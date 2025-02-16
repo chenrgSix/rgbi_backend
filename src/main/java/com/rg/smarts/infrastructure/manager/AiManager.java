@@ -21,9 +21,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class AiManager {
-    //    @Resource
-//    private YuCongMingClient yuCongMingClient;
-//    private YuCongMingClient yuCongMingClient;
+//    todo 将这个部分服务向上提，当前尚且不合理
     @Resource
     private SparkClient sparkClient;
     @Resource

@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.chart.service;
+package com.rg.smarts.application.chart;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rabbitmq.client.Channel;
@@ -10,7 +10,6 @@ import com.rg.smarts.infrastructure.constant.CommonConstant;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.domain.chart.entity.Chart;
-import com.rg.smarts.application.chart.ChartApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

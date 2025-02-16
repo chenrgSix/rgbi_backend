@@ -19,6 +19,7 @@ import com.rg.smarts.interfaces.vo.UserVO;
 import com.rg.smarts.application.score.ScoreApplicationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -39,6 +40,7 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
     private UserDomainService userDomainService;
     @Resource
     private ScoreApplicationService scoreApplicationService;
+
     @Transactional
     @Override
     public long userRegister(UserRegisterRequest userRegisterRequest) {

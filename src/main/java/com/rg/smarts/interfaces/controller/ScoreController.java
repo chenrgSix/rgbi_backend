@@ -37,8 +37,7 @@ public class ScoreController {
      */
     @PostMapping("/checkIn")
     public BaseResponse<String> checkIn(HttpServletRequest request) {
-        User loginUser = userApplicationService.getLoginUser(request);
-        scoreApplicationService.checkIn(loginUser.getId());
+        scoreApplicationService.checkIn(request);
         return ResultUtils.success("签到成功");
     }
 
