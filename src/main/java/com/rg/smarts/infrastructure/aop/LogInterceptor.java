@@ -20,7 +20,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @Slf4j
 public class LogInterceptor {
-
     /**
      * 执行拦截
      */

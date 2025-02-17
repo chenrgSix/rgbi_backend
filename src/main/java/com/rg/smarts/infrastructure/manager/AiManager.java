@@ -1,6 +1,5 @@
 package com.rg.smarts.infrastructure.manager;
 
-import com.rg.smarts.application.score.ScoreApplicationService;
 import io.github.briqt.spark4j.SparkClient;
 import io.github.briqt.spark4j.constant.SparkApiVersion;
 import io.github.briqt.spark4j.model.SparkMessage;
@@ -21,11 +20,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class AiManager {
-//    todo 将这个部分服务向上提，当前尚且不合理
     @Resource
     private SparkClient sparkClient;
-    @Resource
-    private ScoreApplicationService scoreApplicationService;
     @Resource
     private ZhiPuAiChatModel zhiPuAiChatModel;
     /**
@@ -54,8 +50,6 @@ public class AiManager {
      */
     public String doChat(long modelId, String message, Long userId) {
         return sendMesToAIUseZhiPu(message, userId);
-//        return sendMesToAIUseXingHuo(message,userId);
-
     }
 
     /**
@@ -75,7 +69,6 @@ public class AiManager {
         String responseContent = output.getText();
         // 同步调用
         log.info("智普 AI 返回的结果 {}", responseContent);
-        scoreApplicationService.deductPoints(userId, 20L);//调用成功后扣除积分
         return responseContent;
     }
 
@@ -102,7 +95,6 @@ public class AiManager {
         SparkSyncChatResponse chatResponse = sparkClient.chatSync(sparkRequest);
         String responseContent = chatResponse.getContent();
         log.info("星火 AI 返回的结果 {}", responseContent);
-        scoreApplicationService.deductPoints(userId, 20L);//调用成功后扣除积分
         return responseContent;
     }
 

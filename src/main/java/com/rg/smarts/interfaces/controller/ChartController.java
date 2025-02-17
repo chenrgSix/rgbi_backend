@@ -55,9 +55,6 @@ public class ChartController {
     @Resource
     private ChartApplicationService chartApplicationService;
 
-
-
-
 //    @GetMapping("/ai/generate")
 //    public String generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
 //        ChatResponse call = this.chatModel.call(new Prompt(
@@ -70,23 +67,6 @@ public class ChartController {
 //        AssistantMessage output = call.getResult().getOutput();
 //        return output.getText();
 //    }
-
-
-    /**
-     * 智能分析（同步）
-     *
-     * @param multipartFile
-     * @param genChartByAiRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/gen")
-    public BaseResponse<BiResponse> genChartBuAi(@RequestPart("file") MultipartFile multipartFile,
-                                                 GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
-        BiResponse biResponse = chartApplicationService.genChartBuAi(multipartFile, genChartByAiRequest, request);
-        return ResultUtils.success(biResponse);
-
-    }
 
     /**
      * 智能分析(异步)

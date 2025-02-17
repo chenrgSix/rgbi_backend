@@ -1,4 +1,4 @@
-package com.rg.smarts.infrastructure.aop;
+package com.rg.smarts.shared.aop;
 
 import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.ErrorCode;

@@ -3,6 +3,7 @@ package com.rg.smarts.application.chart.impl;
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.chart.constant.BiMqConstant;
 import com.rg.smarts.domain.chart.constant.ChartConstant;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,28 +52,43 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ChartApplicationServiceImpl implements ChartApplicationService {
     @Resource
     private ChartDomainService chartDomainService;
-    @Resource
-    private BiMessageProducer biMessageProducer;
+    @Lazy
     @Resource
     private UserApplicationService userApplicationService;
+    @Lazy
+    @Resource
+    private ScoreApplicationService scoreApplicationService;
     @Resource
     private AiManager aiManager;
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
     @Resource
     private RedisLimiterManager redisLimiterManager;
-    @Resource
-    private ZhiPuAiChatModel chatModel;
+
 
     @Override
     public BiResponse retryGenChart(ChartRetry chartRetry) {
         ThrowUtils.throwIf(chartRetry == null, ErrorCode.PARAMS_ERROR);
         Long chartId = chartRetry.getChartId();
-        chartDomainService.updateById(new Chart(ChartConstant.CHART_STATUS_WAIT, "", "", "", chartId));
-        biMessageProducer.sendMessage(BiMqConstant.BI_EXCHANGE_NAME, BiMqConstant.BI_ROUTING_KEY, String.valueOf(chartId));
+        chartDomainService.retryGenChart(chartId);
         return new BiResponse(chartId);
     }
-    public void validFile(MultipartFile multipartFile) {
+
+    @Override
+    public BiResponse retryGenChart(ChartRetryRequest chartQueryRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(chartQueryRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userApplicationService.getLoginUser(request);
+        Boolean checkResult = userApplicationService.checkUserPoints(loginUser);
+        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
+        ChartRetry chartRetry = new ChartRetry(chartQueryRequest.getId(), loginUser);
+        return this.retryGenChart(chartRetry);
+    }
+    public void validGenChartFile(GenChartByAiRequest genChartByAiRequest,MultipartFile multipartFile) {
+        String name = genChartByAiRequest.getName();
+        String goal = genChartByAiRequest.getGoal();
+        // 校验
+        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
+        ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
         long size = multipartFile.getSize();
         String originalFilename = multipartFile.getOriginalFilename();
         // 校验文件大小
@@ -83,84 +100,13 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         ThrowUtils.throwIf(!validFileSuffixList.contains(suffix), ErrorCode.PARAMS_ERROR, "文件后缀非法");
     }
 
-    private void handleChartUpdateError(long chartId,String execMessage){
-        Chart updateChartResult = new Chart();
-        updateChartResult.setId(chartId);
-        updateChartResult.setExecMessage(execMessage);
-        updateChartResult.setStatus("failed");
-        boolean updateResult = chartDomainService.updateById(updateChartResult);
-        if (!updateResult){
-            log.error("更新图表失败状态失败"+chartId+execMessage);
-        }
-    }
-
-    @Override
-    public BiResponse genChartBuAi(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
-
-        String name = genChartByAiRequest.getName();
-        String goal = genChartByAiRequest.getGoal();
-        String chartType = genChartByAiRequest.getChartType();
-        // 校验
-        ThrowUtils.throwIf(StringUtils.isBlank(goal), ErrorCode.PARAMS_ERROR, "目标为空");
-        ThrowUtils.throwIf(StringUtils.isNotBlank(name) && name.length() > 100, ErrorCode.PARAMS_ERROR, "名称过长");
-        // 校验文件
-        validFile(multipartFile);
-        User loginUser = userApplicationService.getLoginUser(request);
-        // 限流判断，每个用户一个限流器
-        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-        long biModelId = CommonConstant.BI_MODEL_ID;
-        // 构造用户输入
-        StringBuilder userInput = new StringBuilder();
-        userInput.append("分析需求：").append("\n");
-        // 拼接分析目标
-        String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)) {
-            userGoal += "，请使用" + chartType;
-        }
-        userInput.append(userGoal).append("\n");
-        userInput.append("原始数据：").append("\n");
-        // 压缩后的数据
-        String csvData = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append(csvData).append("\n");
-
-        String result = aiManager.doChat(biModelId, userInput.toString(),loginUser.getId());
-        //扣分
-
-        String[] splits = result.split("【【【【【");
-        if (splits.length < 3) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "AI 生成错误");
-        }
-        String genChart = splits[1].trim();
-        String genResult = splits[2].trim();
-        // 插入到数据库
-        Chart chart = new Chart();
-        chart.setName(name);
-        chart.setGoal(goal);
-        chart.setChartData(csvData);
-        chart.setChartType(chartType);
-        chart.setGenChart(genChart);
-        chart.setGenResult(genResult);
-        chart.setUserId(loginUser.getId());
-        boolean saveResult = chartDomainService.save(chart);
-        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
-        BiResponse biResponse = new BiResponse();
-        biResponse.setGenChart(genChart);
-        biResponse.setGenResult(genResult);
-        biResponse.setChartId(chart.getId());
-        return biResponse;
-    }
-
     @Override
     public BiResponse genChartBuAiAsync(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
-
         String name = genChartByAiRequest.getName();
         String goal = genChartByAiRequest.getGoal();
         String chartType = genChartByAiRequest.getChartType();
-        //校验
-        ThrowUtils.throwIf(StringUtils.isBlank(goal),ErrorCode.PARAMS_ERROR,"目标为空");
-        ThrowUtils.throwIf(StringUtils.isNotBlank(name)&&name.length()>100,ErrorCode.PARAMS_ERROR,"名称过长");
-        // 校验文件
-        validFile(multipartFile);
+        //校验入参
+        validGenChartFile(genChartByAiRequest,multipartFile);
         User loginUser = userApplicationService.getLoginUser(request);
         Boolean checkResult = userApplicationService.checkUserPoints(loginUser);
         ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
@@ -187,7 +133,6 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         chart.setChartData(csvData);
         chart.setChartType(chartType);
         chart.setStatus("wait");
-
         chart.setUserId(loginUser.getId());
         boolean saveResult = chartDomainService.save(chart);
         ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
@@ -199,14 +144,15 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
             updateChart.setStatus("running");
             boolean b = chartDomainService.updateById(updateChart);
             if (!b){
-                handleChartUpdateError(chart.getId(),"更新图表失败状态失败");
+                chartDomainService.handleChartUpdateError(chart.getId(),"更新图表失败状态失败");
                 return;
             }
             //调用Ai
             String result = aiManager.doChat(biModelId, userInput.toString(),loginUser.getId());
-            String[] split = result.split("【【【【【");
+            scoreApplicationService.deductPoints(loginUser.getId(), 20L);//调用成功后扣除积分
+            String[] split = result.split("￥￥￥￥￥");
             if (split.length<3){
-                handleChartUpdateError(chart.getId(),"AI生成失败");
+                chartDomainService.handleChartUpdateError(chart.getId(),"AI生成失败");
                 return;
             }
             String genChart = split[1].trim();
@@ -218,37 +164,12 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
             updateChartResult.setStatus("succeed");
             boolean updateResult = chartDomainService.updateById(updateChartResult);
             if(!updateResult){
-                handleChartUpdateError(chart.getId(),"更新图表成功状态失败");
+                chartDomainService.handleChartUpdateError(chart.getId(),"更新图表成功状态失败");
             }
         },threadPoolExecutor);
         BiResponse biResponse =new BiResponse();
         biResponse.setChartId(chart.getId());
         return biResponse;
-    }
-
-    @Override
-    public BiResponse genChartBuAiAsyncMq(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
-        // 校验文件
-        validFile(multipartFile);
-        //登录用户获取
-        User loginUser = userApplicationService.getLoginUser(request);
-        Boolean checkResult = userApplicationService.checkUserPoints(loginUser);
-        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
-        genChartByAiRequest.setLoginUser(loginUser);
-        // 限流判断，每个用户一个限流器
-        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-        return this.getChartMQ(multipartFile, genChartByAiRequest);
-    }
-
-    @Override
-    public BiResponse retryGenChart(ChartRetryRequest chartQueryRequest, HttpServletRequest request) {
-        ThrowUtils.throwIf(chartQueryRequest == null, ErrorCode.PARAMS_ERROR);
-        User loginUser = userApplicationService.getLoginUser(request);
-        Boolean checkResult = userApplicationService.checkUserPoints(loginUser);
-        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
-        ChartRetry chartRetry = new ChartRetry(chartQueryRequest.getId(), loginUser);
-        BiResponse chart = this.retryGenChart(chartRetry);
-        return chart;
     }
 
     /**
@@ -278,11 +199,22 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         chart.setChartType(chartType);
         chart.setStatus("wait");
         chart.setUserId(loginUser.getId());
-        boolean saveResult = chartDomainService.save(chart);
-        ThrowUtils.throwIf(!saveResult, ErrorCode.SYSTEM_ERROR, "图表保存失败");
-        long newChartId = chart.getId();
-        biMessageProducer.sendMessage(BiMqConstant.BI_EXCHANGE_NAME, BiMqConstant.BI_ROUTING_KEY, String.valueOf(newChartId));
+        Long newChartId = chartDomainService.getChartMQ(chart);
         return new BiResponse(newChartId);
+    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BiResponse genChartBuAiAsyncMq(MultipartFile multipartFile, GenChartByAiRequest genChartByAiRequest, HttpServletRequest request) {
+        // 校验入参
+        validGenChartFile(genChartByAiRequest,multipartFile);
+        //登录用户获取
+        User loginUser = userApplicationService.getLoginUser(request);
+        Boolean checkResult = userApplicationService.checkUserPoints(loginUser);
+        ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
+        genChartByAiRequest.setLoginUser(loginUser);
+        // 限流判断，每个用户一个限流器
+        redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
+        return this.getChartMQ(multipartFile, genChartByAiRequest);
     }
 
     private String formatExcelData(final MultipartFile multipartFile,final GenChartByAiRequest genChartByAiRequest){
@@ -333,11 +265,11 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         if (chartEditRequest == null || chartEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Chart chart = new Chart();
-        BeanUtils.copyProperties(chartEditRequest, chart);
-
         User loginUser = userApplicationService.getLoginUser(request);
         long id = chartEditRequest.getId();
+
+        Chart chart = new Chart();
+        BeanUtils.copyProperties(chartEditRequest, chart);
         // 判断是否存在
         Chart oldChart = chartDomainService.getById(id);
         ThrowUtils.throwIf(oldChart == null, ErrorCode.NOT_FOUND_ERROR);
@@ -390,12 +322,8 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         }
         Chart chart = new Chart();
         BeanUtils.copyProperties(chartUpdateRequest, chart);
-
         long id = chartUpdateRequest.getId();
-        // 判断是否存在
-        Chart oldChart = chartDomainService.getById(id);
-        ThrowUtils.throwIf(oldChart == null, ErrorCode.NOT_FOUND_ERROR);
-        return chartDomainService.updateById(chart);
+        return chartDomainService.updateChart(id,chart);
     }
     @Override
     public Chart getChartById(long id, HttpServletRequest request) {

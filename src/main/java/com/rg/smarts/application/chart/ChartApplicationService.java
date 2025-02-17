@@ -21,8 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ChartApplicationService {
 
     BiResponse retryGenChart(ChartRetry chartRetryController);
-    BiResponse genChartBuAi(MultipartFile multipartFile,
-                            GenChartByAiRequest genChartByAiRequest, HttpServletRequest request);
 
     BiResponse genChartBuAiAsync(MultipartFile multipartFile,
                                  GenChartByAiRequest genChartByAiRequest, HttpServletRequest request);

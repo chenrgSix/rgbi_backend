@@ -48,6 +48,7 @@ public class BiInitRabbitMQ {
             Map<String, Object> arg = new HashMap<String, Object>();
             arg.put("x-dead-letter-exchange", BiMqConstant.BI_DLX_EXCHANGE_NAME);
             arg.put("x-dead-letter-routing-key", BiMqConstant.BI_DLX_ROUTING_KEY);
+            //设置队列的死信交换机和死信路由键
             channel.queueDeclare(BiMqConstant.BI_QUEUE_NAME, true, false, false, arg);
             channel.queueBind(BiMqConstant.BI_QUEUE_NAME, BiMqConstant.BI_EXCHANGE_NAME, BiMqConstant.BI_ROUTING_KEY);
             log.info("消息队列启动成功");
