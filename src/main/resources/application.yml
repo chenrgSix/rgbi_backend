@@ -1,29 +1,24 @@
 # 公共配置文件
 spring:
-  application:
-    name: intelligent
-  # 默认 dev 环境
-  profiles:
-    active: prod
   # 支持 swagger3
   mvc:
-    pathmatch:
+    path match:
       matching-strategy: ant_path_matcher
-  #    pathmatch:
-#      matching-strategy: ant_path_matcher
+
   # session 配置
   session:
     # todo 取消注释开启分布式 session（须先配置 Redis）
-    # store-type: redis
+    store-type: redis
     # 30 天过期
     timeout: 2592000
+
   # 数据库配置
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/rg_bi
-    username: root
-    password: root
+    url: #
+    username: #
+    password: #
   # Redis 配置
   # todo 需替换配置，然后取消注释
   data:
@@ -32,30 +27,25 @@ spring:
       host: localhost
       port: 6379
       timeout: 5000
-  #  password: 123456
-  # Elasticsearch 配置
-  # todo 需替换配置，然后取消注释
-  #  elasticsearch:
-  #    uris: http://localhost:9200
-  #    username: root
-  #    password: 123456
+      # password:
   # 文件上传
   servlet:
     multipart:
       # 大小限制
       max-file-size: 10MB
   rabbitmq:
-    host: localhost
+    host: #
     port: 5672
-    password: guest
-    username: guest
+    username: #
+    password: #
   ai:
     zhipuai:
-      api-key: ###
+      api-key: #
       chat:
         enabled: true
         options:
           model: GLM-4-Flash
+#      base-url:	https://open.bigmodel.cn/api/paas/v4/chat/completions
 server:
   address: 0.0.0.0
   port: 8101
@@ -65,10 +55,14 @@ server:
     session:
       cookie:
         max-age: 2592000
+        same-site: none
+        secure: true
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #    default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
@@ -80,10 +74,10 @@ mybatis-plus:
 # todo 需替换配置
 cos:
   client:
-    accessKey: 
-    secretKey: 
-    region:
-    bucket: 
+    accessKey: #
+    secretKey: #
+    region: #
+    bucket: #
 # 接口文档配置
 knife4j:
   enable: true
@@ -95,9 +89,11 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.rg.intelligent.controller
+#  production: true
+
 #星火大模型
 xunfei:
   client:
-    appid:
-    apiSecret:
-    apiKey:
+    appid: #
+    apiSecret: #
+    apiKey: #
