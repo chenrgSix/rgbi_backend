@@ -3,10 +3,10 @@ package com.rg.smarts.application.chart;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.rabbitmq.client.Channel;
 
+import com.rg.smarts.application.llm.LlmApplicationService;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.domain.chart.constant.BiMqConstant;
 import com.rg.smarts.domain.chart.constant.ChartConstant;
-import com.rg.smarts.infrastructure.constant.CommonConstant;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.domain.chart.entity.Chart;
@@ -26,9 +26,10 @@ public class BiMessageConsumer {
 
     @Resource
     private ChartApplicationService chartApplicationService;
-
     @Resource
-    private AiManager aiManager;
+    private LlmApplicationService llmApplicationService;
+
+
 
 
 
@@ -58,7 +59,6 @@ public class BiMessageConsumer {
     //        handleChartUpdateError(chart.getId(), "更新图表执行中状态失败");
     //        return;
     //    }
-    //
     //    // 消息确认
     //    channel.basicAck(deliveryTag, false);
     //}
@@ -81,7 +81,7 @@ public class BiMessageConsumer {
             if (userTaskCount <= BiMqConstant.MAX_CONCURRENT_CHARTS) {
                 chartApplicationService.updateById(new Chart(Long.parseLong(message), ChartConstant.CHART_STATUS_RUNNING, ""));
                 // 调用 AI
-                String result = aiManager.doChat(CommonConstant.BI_MODEL_ID, buildUserInput(chart),userId);
+                String result = llmApplicationService.genChart(buildUserInput(chart),userId);
                 //String result = aiManager.sendMesToAIUseXingHuo(buildUserInput(chart),userId);
                 log.info("AI信息生成={}",result);
                 String[] splits = result.split("￥￥￥￥￥");

@@ -1,5 +1,6 @@
 package com.rg.smarts.infrastructure.manager;
 
+import com.rg.smarts.domain.llm.provider.AIProvider;
 import dev.langchain4j.community.model.zhipu.ZhipuAiChatModel;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class AiManager {
+public class AiManager implements AIProvider {
 
     @Resource
     private ZhipuAiChatModel zhiPuAiChatModel;
@@ -35,22 +36,12 @@ public class AiManager {
             "\"";
 
     /**
-     * AI 对话
-     *
-     * @param modelId
-     * @param message
-     * @return
-     */
-    public String doChat(long modelId, String message, Long userId) {
-        return sendMesToAIUseZhiPu(message, userId);
-    }
-
-    /**
      * 向 AI 发送请求
      *
      * @return
      */
-    public String sendMesToAIUseZhiPu(final String content, Long userId) {
+    @Override
+    public String genChart(final String content, Long userId) {
         //构造请求参数
         List<ChatMessage> list = List.of(UserMessage.from(PRECONDITION), UserMessage.from(content));
         Response<AiMessage> generate = zhiPuAiChatModel.generate(list);

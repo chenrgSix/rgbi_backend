@@ -3,10 +3,9 @@ package com.rg.smarts.application.chart.impl;
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rg.smarts.application.llm.LlmApplicationService;
 import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
-import com.rg.smarts.domain.chart.constant.BiMqConstant;
-import com.rg.smarts.domain.chart.constant.ChartConstant;
 import com.rg.smarts.application.chart.ChartApplicationService;
 import com.rg.smarts.domain.chart.service.ChartDomainService;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
@@ -17,7 +16,6 @@ import com.rg.smarts.infrastructure.manager.RedisLimiterManager;
 import com.rg.smarts.infrastructure.utils.SqlUtils;
 import com.rg.smarts.interfaces.dto.chart.*;
 import com.rg.smarts.interfaces.vo.BiResponse;
-import com.rg.smarts.infrastructure.mq.BiMessageProducer;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.domain.chart.entity.Chart;
@@ -58,12 +56,14 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
     @Lazy
     @Resource
     private ScoreApplicationService scoreApplicationService;
-    @Resource
-    private AiManager aiManager;
+
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
     @Resource
     private RedisLimiterManager redisLimiterManager;
+    @Resource
+    private LlmApplicationService llmApplicationService;
+
 
 
     @Override
@@ -112,7 +112,7 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         ThrowUtils.throwIf(!checkResult, ErrorCode.OPERATION_ERROR,"积分不足");
         // 限流判断，每个用户一个限流器
         redisLimiterManager.doRateLimit("genChartByAi_" + loginUser.getId());
-        long biModelId = 1659171950288818178L;
+
         // 构造用户输入
         StringBuilder userInput = new StringBuilder();
         userInput.append("分析需求：").append("\n");
@@ -148,7 +148,7 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
                 return;
             }
             //调用Ai
-            String result = aiManager.doChat(biModelId, userInput.toString(),loginUser.getId());
+            String result = llmApplicationService.genChart(userInput.toString(),loginUser.getId());
             scoreApplicationService.deductPoints(loginUser.getId(), 20L);//调用成功后扣除积分
             String[] split = result.split("￥￥￥￥￥");
             if (split.length<3){
