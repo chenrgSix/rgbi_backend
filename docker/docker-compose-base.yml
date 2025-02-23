@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:7.2.4
+    container_name: bi_redis
+    command: redis-server --requirepass rrrrrrg1. --maxmemory 128mb --maxmemory-policy allkeys-lru
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis_data:/data
+    restart: unless-stopped
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-12-20T01-00-02Z
+    container_name: bi_minio
+    command: server --console-address ":9001" /data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=rrrrrrg1.
+      - TZ='Asia/Shanghai'
+    volumes:
+      - ./minio_data:/data
+    restart: unless-stopped
+  mysql:
+    # mysql:5.7 linux/arm64 image is unavailable.
+    image: mysql:8.0.39
+    container_name: bi_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rrrrrrg1.
+      - TZ='Asia/Shanghai'
+    command:
+      --max_connections=1000
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --default-authentication-plugin=mysql_native_password
+      --tls_version="TLSv1.2,TLSv1.3"
+    ports:
+      - 13306:3306
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped

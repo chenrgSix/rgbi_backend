@@ -203,6 +203,6 @@ public class UserController {
     public BaseResponse<Boolean> updateMyUser(@RequestBody UserUpdateMyRequest userUpdateMyRequest,
             HttpServletRequest request) {
         Boolean b = userApplicationService.updateMyUser(userUpdateMyRequest,request);
-        return ResultUtils.success(b );
+        return ResultUtils.success(b);
     }
 }

@@ -1,0 +1,17 @@
+version: '3.9'
+include:
+  - ./docker-compose-base.yml
+services:
+  backend:
+    container_name: bi_backend
+    image: bi_backend
+    restart: unless-stopped
+    ports:
+      - "8101:8101"
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./lift_server:/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

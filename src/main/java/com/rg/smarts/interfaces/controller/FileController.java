@@ -1,6 +1,7 @@
 package com.rg.smarts.interfaces.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.common.ResultUtils;
@@ -11,6 +12,9 @@ import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.application.user.UserApplicationService;
 import java.io.File;
 import java.util.Arrays;
+
+import com.rg.smarts.infrastructure.utils.MinioUtil;
+import io.minio.MinioClient;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +38,48 @@ public class FileController {
 
     @Resource
     private CosManager cosManager;
+
+    @Resource
+    private MinioUtil minioUtil;
+    /**
+     * 文件上传
+     * @param multipartFile
+     * @param request
+     * @return
+     */
+    @PostMapping("/upload/minio")
+    public BaseResponse<String> uploadFileMinio(@RequestPart("file") MultipartFile multipartFile,
+                                           HttpServletRequest request) {
+        validFile(multipartFile);
+        User loginUser = userApplicationService.getLoginUser(request);
+        // 文件目录：根据业务、用户来划分
+        String uuid = RandomStringUtils.randomAlphanumeric(8);
+        String filename = uuid + "-" + multipartFile.getOriginalFilename();
+        String filepath = String.format("%s/%s", loginUser.getId(), filename);
+        File file = null;
+        try {
+            // 上传文件
+            file = File.createTempFile(filepath, null);
+            multipartFile.transferTo(file);
+            String uploadUrl = minioUtil.upload(filepath, file);
+            if(StrUtil.isBlank(uploadUrl)){
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
+            }
+            // 返回可访问地址
+            return ResultUtils.success(uploadUrl);
+        } catch (Exception e) {
+            log.error("file upload error, filepath = " + filepath, e);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
+        } finally {
+            if (file != null) {
+                // 删除临时文件
+                boolean delete = file.delete();
+                if (!delete) {
+                    log.error("file delete error, filepath = {}", filepath);
+                }
+            }
+        }
+    }
 
     /**
      * 文件上传
