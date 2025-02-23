@@ -12,7 +12,6 @@ spring:
     store-type: redis
     # 30 天过期
     timeout: 2592000
-
   # 数据库配置
   # todo 需替换配置
   datasource:
@@ -39,15 +38,7 @@ spring:
     port: 5672
     username: #
     password: #
-  ai:
-    zhipuai:
-      api-key: #
-      chat:
-        enabled: true
-        options:
-          model: GLM-4-Flash
 
-#      base-url:	https://open.bigmodel.cn/api/paas/v4/chat/completions
 server:
   address: 0.0.0.0
   port: 8101
@@ -71,7 +62,6 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 
-
 # 对象存储
 # todo 需替换配置
 cos:
@@ -80,6 +70,7 @@ cos:
     secretKey: #
     region: #
     bucket: #
+
 # 接口文档配置
 knife4j:
   enable: true
@@ -91,16 +82,18 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.rg.intelligent.controller
-#  production: true
+  #  production: true
 
-#星火大模型
-xunfei:
-  client:
-    appid: #
-    apiSecret: #
-    apiKey: #
 minio:
   endpoint: # #Minio服务所在地址
   bucketName: # #存储桶名称
   accessKey: # #访问的key
   secretKey: # #访问的秘钥
+
+langchain4j:
+  zhipu:
+    apiKey: #
+    model: GLM-4-Flash #
+    logRequests: true #
+    logResponses: true #
+

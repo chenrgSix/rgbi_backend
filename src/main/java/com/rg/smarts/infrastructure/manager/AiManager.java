@@ -1,29 +1,22 @@
 package com.rg.smarts.infrastructure.manager;
 
-import io.github.briqt.spark4j.SparkClient;
-import io.github.briqt.spark4j.constant.SparkApiVersion;
-import io.github.briqt.spark4j.model.SparkMessage;
-import io.github.briqt.spark4j.model.SparkSyncChatResponse;
-import io.github.briqt.spark4j.model.request.SparkRequest;
+import dev.langchain4j.community.model.zhipu.ZhipuAiChatModel;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.output.Response;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.zhipuai.ZhiPuAiChatModel;
-import org.springframework.ai.zhipuai.ZhiPuAiChatOptions;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 public class AiManager {
+
     @Resource
-    private SparkClient sparkClient;
-    @Resource
-    private ZhiPuAiChatModel zhiPuAiChatModel;
+    private ZhipuAiChatModel zhiPuAiChatModel;
     /**
      * AI 生成问题的预设条件
      */
@@ -59,43 +52,13 @@ public class AiManager {
      */
     public String sendMesToAIUseZhiPu(final String content, Long userId) {
         //构造请求参数
-        Prompt prompt = new Prompt(PRECONDITION + content, ZhiPuAiChatOptions
-                .builder()
-                .user(userId.toString())
-                .build());
-        // 构造请求
-        ChatResponse call = this.zhiPuAiChatModel.call(prompt);
-        AssistantMessage output = call.getResult().getOutput();
-        String responseContent = output.getText();
+        List<ChatMessage> list = List.of(UserMessage.from(PRECONDITION), UserMessage.from(content));
+        Response<AiMessage> generate = zhiPuAiChatModel.generate(list);
+        String chat = generate.content().text();
         // 同步调用
-        log.info("智普 AI 返回的结果 {}", responseContent);
-        return responseContent;
+        log.info("智普 AI 返回的结果 {}", chat);
+        return chat;
     }
 
-    /**
-     * 向 AI 发送请求
-     *
-     * @return
-     */
-    public String sendMesToAIUseXingHuo(final String content, Long userId) {
-        List<SparkMessage> messages = new ArrayList<>();
-        messages.add(SparkMessage.userContent(content));
-        // 构造请求
-        SparkRequest sparkRequest = SparkRequest.builder()
-                // 消息列表
-                .messages(messages)
-                // 模型回答的tokens的最大长度,非必传,取值为[1,4096],默认为2048
-                .maxTokens(2048)
-                // 核采样阈值。用于决定结果随机性,取值越高随机性越强即相同的问题得到的不同答案的可能性越高 非必传,取值为[0,1],默认为0.5
-                .temperature(0.2)
-                // 指定请求版本，默认使用最新2.0版本
-                .apiVersion(SparkApiVersion.V3_5)
-                .build();
-        // 同步调用
-        SparkSyncChatResponse chatResponse = sparkClient.chatSync(sparkRequest);
-        String responseContent = chatResponse.getContent();
-        log.info("星火 AI 返回的结果 {}", responseContent);
-        return responseContent;
-    }
 
 }
