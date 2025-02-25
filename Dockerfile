@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:17
 VOLUME /tmp
 COPY target/*.jar intelligent-0.0.1-SNAPSHOT.jar
 ENV PORT=8101

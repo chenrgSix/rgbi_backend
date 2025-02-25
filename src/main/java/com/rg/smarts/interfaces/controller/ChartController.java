@@ -8,6 +8,7 @@ import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.infrastructure.common.ResultUtils;
+import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.interfaces.dto.chart.*;
 import com.rg.smarts.interfaces.vo.BiResponse;
 import jakarta.annotation.Resource;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 图表接口
@@ -27,16 +30,10 @@ public class ChartController {
     @Resource
     private ChartApplicationService chartApplicationService;
 //    @Resource
-//    private ZhipuAiChatModel zhipuAiChatModel;
+//    private AiManager aiManager;
 //    @GetMapping("/ai/generate")
-//    public String generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
-//        UserMessage from = UserMessage.from("不管我说什么你都只回复一个字“好");
-//        UserMessage from1 = UserMessage.from(message);
-//        List<ChatMessage> list = new ArrayList<>();
-//        list.add(from);
-//        list.add(from1);
-//        Response<AiMessage> generate = zhipuAiChatModel.generate(list);
-//        return generate.content().text();
+//    public String generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+//        return aiManager.chatAiService(message, "萌妹","傲娇",1L);
 //    }
 
     /**

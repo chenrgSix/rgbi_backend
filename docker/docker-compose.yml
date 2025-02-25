@@ -4,7 +4,7 @@ include:
 services:
   backend:
     container_name: bi_backend
-    image: bi_backend
+    image: intelligent
     restart: unless-stopped
     ports:
       - "8101:8101"

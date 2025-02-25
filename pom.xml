@@ -24,14 +24,20 @@
             <artifactId>xunfei-spark4j</artifactId>
             <version>1.2.0</version>
         </dependency>
-
-
+        <!--        https://docs.langchain4j.dev/integrations/document-loaders/file-system-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-community-zhipu-ai</artifactId>
-            <version>1.0.0-beta1</version>
+            <artifactId>langchain4j</artifactId>
+            <version>0.35.0</version>
         </dependency>
-<!--       redisson -->
+
+        <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-core -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-zhipu-ai</artifactId>
+            <version>0.35.0</version>
+        </dependency>
+        <!--       redisson -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
@@ -166,47 +172,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-    <repositories>
-        <!-- Spring Milestones 仓库 -->
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
 
-        <!-- Spring Snapshots 仓库 -->
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
-    <dependencyManagement>
-        <dependencies>
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.ai</groupId>-->
-<!--                <artifactId>spring-ai-bom</artifactId>-->
-<!--                <version>1.0.0-SNAPSHOT</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-            <dependency>
-                <groupId>dev.langchain4j</groupId>
-                <artifactId>langchain4j-community-bom</artifactId>
-                <version>1.0.0-beta1</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 </project>

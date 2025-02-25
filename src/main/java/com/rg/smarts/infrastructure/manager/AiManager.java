@@ -1,39 +1,44 @@
 package com.rg.smarts.infrastructure.manager;
 
 import com.rg.smarts.domain.llm.provider.AIProvider;
-import dev.langchain4j.community.model.zhipu.ZhipuAiChatModel;
+import com.rg.smarts.infrastructure.aiservice.AiChatTemplate;
+import com.rg.smarts.infrastructure.utils.BaseTools;
+
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.agent.tool.ToolSpecifications;
+
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.ToolExecutionResultMessage;
 import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.zhipu.ZhipuAiChatModel;
+import dev.langchain4j.model.zhipu.ZhipuAiEmbeddingModel;
+import dev.langchain4j.service.AiServices;
 import dev.langchain4j.model.output.Response;
+import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.tool.DefaultToolExecutor;
+import dev.langchain4j.service.tool.ToolExecution;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @Slf4j
 public class AiManager implements AIProvider {
 
     @Resource
+    private AiChatTemplate aiChatTemplate;
+
+    @Resource
     private ZhipuAiChatModel zhiPuAiChatModel;
     /**
      * AI 生成问题的预设条件
      */
-    public static final String PRECONDITION = "你是一个数据分析师和前端开发专家，接下来我会按照以下固定格式给你提供内容：\n" +
-            "\"\n" +
-            "Analysis goal: {数据分析的需求或者目标}\n" +
-            "Raw data: \n" +
-            "{csv格式的原始数据，用,作为分隔符}\n" +
-            "\"\n" +
-            "请根据这两部分内容，按照以下指定格式用英文或中文生成内容，此外不要输出任何多余的开头、结尾、注释：\n" +
-            "\"\n" +
-            "￥￥￥￥￥\n" +
-            "{前端Echarts V5的option配置对象的JSON代码，不能生成开头的 \" options = \"，而是生成options花括号里面的内容代码，不要生成options的\"title\"= \"chart title\"。以及不要生成任何多余的注释，解释，介绍，开头，结尾。生成的Echarts能够合理地将数据进行可视化}\n" +
-            "￥￥￥￥￥\n" +
-            "{明确的数据分析结论、越详细越好，不要生成多余的注释}\n" +
-            "\"";
 
     /**
      * 向 AI 发送请求
@@ -42,14 +47,62 @@ public class AiManager implements AIProvider {
      */
     @Override
     public String genChart(final String content, Long userId) {
-        //构造请求参数
-        List<ChatMessage> list = List.of(UserMessage.from(PRECONDITION), UserMessage.from(content));
-        Response<AiMessage> generate = zhiPuAiChatModel.generate(list);
-        String chat = generate.content().text();
+        AiChatTemplate ai = AiServices.create(AiChatTemplate.class, zhiPuAiChatModel);
+        String chat = ai.genChart(content);
         // 同步调用
         log.info("智普 AI 返回的结果 {}", chat);
         return chat;
     }
 
+//    /**
+//     * 对话，暂时只支持一个工具
+//     * @param content
+//     * @param sessionId
+//     * @return
+//     * @throws NoSuchMethodException
+//     * @throws InvocationTargetException
+//     * @throws IllegalAccessException
+//     */
+//    public String chat(String content, Long sessionId) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+//        List<ToolSpecification> toolSpecifications = ToolSpecifications.toolSpecificationsFrom(BaseTools.class);
+//        List<ChatMessage> chatMessages = new ArrayList<>();
+//        //构造请求参数
+//        UserMessage userMessage = UserMessage.from(content);
+//        chatMessages.add(userMessage);
+//        Response<AiMessage> aiMessageResponse = zhiPuAiChatModel.generate(chatMessages, toolSpecifications);
+//        log.info("zhiPuAiChatModel返回的结果 {}", aiMessageResponse);
+//        AiMessage aiMessage = aiMessageResponse.content();
+//        System.out.println(aiMessage);
+//        List<ToolExecutionRequest> toolExecutionRequests = aiMessage.toolExecutionRequests();
+//        if (!toolExecutionRequests.isEmpty()) {
+//            for (ToolExecutionRequest toolExecutionRequest : toolExecutionRequests) {
+//                String methodName = toolExecutionRequest.name();
+//                String arguments = toolExecutionRequest.arguments();
+//                System.out.println("methodName:" + methodName + ",arguments:" + arguments);
+//            }
+//        }
+//        chatMessages.add(aiMessage);
+//
+//        toolExecutionRequests.forEach(toolExecutionRequest -> {
+//            DefaultToolExecutor defaultToolExecutor = new DefaultToolExecutor(baseTools, toolExecutionRequest);
+//            String result = defaultToolExecutor.execute(toolExecutionRequest, UUID.randomUUID().toString());
+//            System.out.println(result);
+//            ToolExecutionResultMessage toolExecutionResultMessage = ToolExecutionResultMessage
+//                    .from(toolExecutionRequest, result);
+//            chatMessages.add(toolExecutionResultMessage);
+//        });
+//        Response<AiMessage> generate = zhiPuAiChatModel.generate(chatMessages);
+//        return generate.content().text();
+//    }
 
+    /**
+     * 对话，暂时只支持一个工具
+     * @param content
+     * @param sessionId
+     */
+
+    public String chatAiService(String content,String cosplay,String individua, Long sessionId){
+        String chat = aiChatTemplate.chat(sessionId,content,cosplay,individua);
+        return chat;
+    }
 }

@@ -217,25 +217,6 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
         return this.getChartMQ(multipartFile, genChartByAiRequest);
     }
 
-    private String formatExcelData(final MultipartFile multipartFile,final GenChartByAiRequest genChartByAiRequest){
-        String goal = genChartByAiRequest.getGoal();
-        String chartType = genChartByAiRequest.getChartType();
-        // 构造用户输入
-        StringBuilder userInput = new StringBuilder();
-        userInput.append(AiManager.PRECONDITION);
-        userInput.append("分析需求：").append("\n");
-        // 拼接分析目标
-        String userGoal = goal;
-        if (StringUtils.isNotBlank(chartType)) {
-            userGoal += "，需要生成图表的类型是" + chartType;
-        }
-        userInput.append(userGoal).append("\n");
-        userInput.append("原始数据：").append("\n");
-        // 压缩后的数据
-        String data = ExcelUtils.excelToCsv(multipartFile);
-        userInput.append(data).append("\n");
-        return String.valueOf(userInput);
-    }
 
     public QueryWrapper<Chart> getQueryWrapper(ChartQueryRequest chartQueryRequest) {
         QueryWrapper<Chart> queryWrapper = new QueryWrapper<>();
