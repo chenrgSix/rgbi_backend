@@ -8,7 +8,6 @@ import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.infrastructure.common.ResultUtils;
-import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.interfaces.dto.chart.*;
 import com.rg.smarts.interfaces.vo.BiResponse;
 import jakarta.annotation.Resource;
@@ -16,8 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * 图表接口

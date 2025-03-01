@@ -5,7 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.common.ResultUtils;
-import com.rg.smarts.application.file.FileConstant;
+import com.rg.smarts.shared.file.FileConstant;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.manager.CosManager;
 import com.rg.smarts.domain.user.entity.User;
@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.Arrays;
 
 import com.rg.smarts.infrastructure.utils.MinioUtil;
-import io.minio.MinioClient;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

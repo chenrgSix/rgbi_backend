@@ -1,9 +1,7 @@
 package com.rg.smarts.domain.user.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rg.smarts.domain.user.constant.UserConstant;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.domain.user.repository.UserRepository;
@@ -14,12 +12,9 @@ import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.constant.CommonConstant;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
-
 import com.rg.smarts.infrastructure.utils.SqlUtils;
 import com.rg.smarts.interfaces.dto.user.UserQueryRequest;
 import com.rg.smarts.interfaces.dto.user.UserUpdateRequest;
-import com.rg.smarts.interfaces.vo.LoginUserVO;
-import com.rg.smarts.interfaces.vo.UserVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 用户服务实现
@@ -73,7 +64,7 @@ public class UserDomainServiceImpl implements UserDomainService {
     }
 
     @Override
-    public LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request) {
+    public User userLogin(String userAccount, String userPassword, HttpServletRequest request) {
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
@@ -98,7 +89,7 @@ public class UserDomainServiceImpl implements UserDomainService {
         }
         // 3. 记录用户的登录态
         request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
-        return this.getLoginUserVO(user);
+        return user;
     }
 
 
@@ -145,19 +136,6 @@ public class UserDomainServiceImpl implements UserDomainService {
         return userRepository.getById(userId);
     }
 
-    /**
-     * 是否为管理员
-     *
-     * @param request
-     * @return
-     */
-    @Override
-    public boolean isAdmin(HttpServletRequest request) {
-        // 仅管理员可查询
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User user = (User) userObj;
-        return isAdmin(user);
-    }
 
     @Override
     public boolean isAdmin(User user) {
@@ -177,34 +155,6 @@ public class UserDomainServiceImpl implements UserDomainService {
         // 移除登录态
         request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return true;
-    }
-
-    @Override
-    public LoginUserVO getLoginUserVO(User user) {
-        if (user == null) {
-            return null;
-        }
-        LoginUserVO loginUserVO = new LoginUserVO();
-        BeanUtils.copyProperties(user, loginUserVO);
-        return loginUserVO;
-    }
-
-    @Override
-    public UserVO getUserVO(User user) {
-        if (user == null) {
-            return null;
-        }
-        UserVO userVO = new UserVO();
-        BeanUtils.copyProperties(user, userVO);
-        return userVO;
-    }
-
-    @Override
-    public List<UserVO> getUserVO(List<User> userList) {
-        if (CollUtil.isEmpty(userList)) {
-            return new ArrayList<>();
-        }
-        return userList.stream().map(this::getUserVO).collect(Collectors.toList());
     }
 
     @Override
@@ -262,27 +212,14 @@ public class UserDomainServiceImpl implements UserDomainService {
         return user;
     }
 
-    @Override
-    public UserVO getUserByIdVo(long id) {
-        return getUserVO(getUserById(id));
-    }
 
     @Override
-    public Page<User> listUserByPage(long current,long size,QueryWrapper<User> queryWrapper) {
+    public Page<User> listUserByPage(long current, long size, QueryWrapper<User> queryWrapper) {
         Page<User> userPage = userRepository.page(new Page<>(current, size),
                 queryWrapper);
         return userPage;
     }
 
-    @Override
-    public Page<UserVO> listUserVOByPage(long current,long size,QueryWrapper<User> queryWrapper) {
-        Page<User> userPage = userRepository.page(new Page<>(current, size),
-                queryWrapper);
-        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
-        List<UserVO> userVO = this.getUserVO(userPage.getRecords());
-        userVOPage.setRecords(userVO);
-        return userVOPage;
-    }
 
     @Override
     public Boolean removeById(long id) {

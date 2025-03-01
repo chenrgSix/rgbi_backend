@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rg.smarts.domain.chart.entity.Chart;
 import com.rg.smarts.domain.chart.repository.ChartRepository;
 import com.rg.smarts.infrastructure.mapper.ChartMapper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public class ChartRepositoryImpl extends ServiceImpl<ChartMapper, Chart> implements ChartRepository {
 }

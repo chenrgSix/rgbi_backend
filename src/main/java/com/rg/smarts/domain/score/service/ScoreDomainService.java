@@ -1,7 +1,6 @@
 package com.rg.smarts.domain.score.service;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.rg.smarts.domain.score.entity.Score;
 
 /**
@@ -33,7 +32,7 @@ public interface ScoreDomainService {
      * @param userId
      * @return
      */
-    Long getUserPoints(Long userId);
+    Score getUserPoints(Long userId);
 
     Boolean save(Score score);
 

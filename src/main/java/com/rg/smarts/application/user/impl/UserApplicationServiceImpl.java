@@ -1,32 +1,32 @@
 package com.rg.smarts.application.user.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rg.smarts.domain.score.entity.Score;
+import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
-import com.rg.smarts.domain.user.service.UserDomainService;
+import com.rg.smarts.domain.score.entity.Score;
 import com.rg.smarts.domain.user.constant.UserConstant;
+import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.domain.user.service.UserDomainService;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
+import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import com.rg.smarts.interfaces.dto.user.*;
 import com.rg.smarts.interfaces.vo.LoginUserVO;
-import com.rg.smarts.infrastructure.common.ErrorCode;
-import com.rg.smarts.infrastructure.mapper.UserMapper;
-import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.interfaces.vo.ScoreVO;
 import com.rg.smarts.interfaces.vo.UserVO;
-import com.rg.smarts.application.score.ScoreApplicationService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务实现
@@ -70,7 +70,10 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
         User.validUserLogin(userAccount,userPassword);
-        return userDomainService.userLogin(userAccount,userPassword,request);
+        User user = userDomainService.userLogin(userAccount, userPassword, request);
+        LoginUserVO userVO = new LoginUserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
     }
 
     /**
@@ -91,7 +94,8 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
     }
     @Override
     public Boolean checkUserPoints(User user) {
-        Long userPoints = scoreApplicationService.getUserPoints(user.getId());
+        ScoreVO scoreVO = scoreApplicationService.getUserPoints(user.getId());
+        Long userPoints = scoreVO.getScoreTotal();
         return userPoints != null && userPoints > 0;
     }
     /**
@@ -125,20 +129,33 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
     }
 
     @Override
-    public LoginUserVO getLoginUserVO(User user) {
-        return userDomainService.getLoginUserVO(user);
+    public UserVO getUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
     }
 
-    @Override
-    public UserVO getUserVO(User user) {
-        return userDomainService.getUserVO(user);
-    }
 
     @Override
     public List<UserVO> getUserVO(List<User> userList) {
-        return userDomainService.getUserVO(userList);
+        if (CollUtil.isEmpty(userList)) {
+            return new ArrayList<>();
+        }
+        return userList.stream().map(this::getUserVO).collect(Collectors.toList());
     }
 
+    @Override
+    public LoginUserVO getLoginUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        LoginUserVO loginUserVO = new LoginUserVO();
+        BeanUtils.copyProperties(user, loginUserVO);
+        return loginUserVO;
+    }
     @Override
     public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
         ThrowUtils.throwIf(userQueryRequest==null,ErrorCode.PARAMS_ERROR);
@@ -173,7 +190,7 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
 
     @Override
     public UserVO getUserByIdVo(long id) {
-        return userDomainService.getUserByIdVo(id);
+        return getUserVO(getUserById(id));
     }
 
     @Override
@@ -194,7 +211,12 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         QueryWrapper<User> queryWrapper = userDomainService.getQueryWrapper(userQueryRequest);
-        return userDomainService.listUserVOByPage(current,size,queryWrapper);
+        Page<User> userPage = userDomainService.listUserByPage(current, size, queryWrapper);
+        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
+        List<UserVO> userVO = this.getUserVO(userPage.getRecords());
+        userVOPage.setRecords(userVO);
+        return userVOPage;
+
     }
 
     @Override
@@ -212,4 +234,5 @@ public class UserApplicationServiceImpl  implements UserApplicationService {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return result;
     }
+
 }

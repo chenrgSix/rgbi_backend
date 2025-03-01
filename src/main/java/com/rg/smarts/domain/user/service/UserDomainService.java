@@ -2,17 +2,11 @@ package com.rg.smarts.domain.user.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.interfaces.dto.user.UserQueryRequest;
-import com.rg.smarts.interfaces.dto.user.UserUpdateMyRequest;
 import com.rg.smarts.interfaces.dto.user.UserUpdateRequest;
-import com.rg.smarts.interfaces.vo.LoginUserVO;
-import com.rg.smarts.interfaces.vo.UserVO;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.List;
 
 /**
  * 用户服务
@@ -37,7 +31,7 @@ public interface UserDomainService{
      * @param request
      * @return 脱敏后的用户信息
      */
-    LoginUserVO userLogin(String userAccount, String userPassword, HttpServletRequest request);
+    User userLogin(String userAccount, String userPassword, HttpServletRequest request);
 
 
 
@@ -58,13 +52,6 @@ public interface UserDomainService{
      */
     User getLoginUserPermitNull(HttpServletRequest request);
 
-    /**
-     * 是否为管理员
-     *
-     * @param request
-     * @return
-     */
-    boolean isAdmin(HttpServletRequest request);
 
     /**
      * 是否为管理员
@@ -82,28 +69,7 @@ public interface UserDomainService{
      */
     boolean userLogout(HttpServletRequest request);
 
-    /**
-     * 获取脱敏的已登录用户信息
-     *
-     * @return
-     */
-    LoginUserVO getLoginUserVO(User user);
 
-    /**
-     * 获取脱敏的用户信息
-     *
-     * @param user
-     * @return
-     */
-    UserVO getUserVO(User user);
-
-    /**
-     * 获取脱敏的用户信息
-     *
-     * @param userList
-     * @return
-     */
-    List<UserVO> getUserVO(List<User> userList);
 
     /**
      * 获取查询条件
@@ -133,12 +99,7 @@ public interface UserDomainService{
      * @return
      */
     User getUserById(long id);
-    /**
-     * 根据id获取脱敏用户
-     * @param id
-     * @return
-     */
-    UserVO getUserByIdVo( long id);
+
 
     /**
      * 分页获取用户列表（仅管理员）
@@ -148,14 +109,6 @@ public interface UserDomainService{
      */
     Page<User> listUserByPage(long current,long size, QueryWrapper<User> queryWrapper);
 
-    /**
-     *
-     * @param current
-     * @param size
-     * @param queryWrapper
-     * @return
-     */
-    Page<UserVO> listUserVOByPage(long current,long size,QueryWrapper<User> queryWrapper) ;
 
     Boolean removeById(long id);
     Boolean updateById(User user);

@@ -2,15 +2,13 @@ package com.rg.smarts.domain.score.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.domain.score.entity.Score;
 import com.rg.smarts.domain.score.repository.ScoreRepository;
 import com.rg.smarts.domain.score.service.ScoreDomainService;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
-import com.rg.smarts.infrastructure.mapper.ScoreMapper;
 import jakarta.annotation.Resource;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -71,11 +69,10 @@ public class ScoreDomainServiceImpl implements ScoreDomainService {
      * @param userId
      * @return
      */
-    public Long getUserPoints(Long userId) {
+    public Score getUserPoints(Long userId) {
         QueryWrapper<Score> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userId", userId);
-        Score score = scoreRepository.getOne(queryWrapper);
-        return score.getScoreTotal();
+        return scoreRepository.getOne(queryWrapper);
     }
 
     @Override

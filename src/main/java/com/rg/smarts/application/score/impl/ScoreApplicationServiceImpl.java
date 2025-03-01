@@ -1,18 +1,15 @@
 package com.rg.smarts.application.score.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
+import com.rg.smarts.domain.score.entity.Score;
 import com.rg.smarts.domain.score.service.ScoreDomainService;
 import com.rg.smarts.domain.user.entity.User;
-import com.rg.smarts.infrastructure.exception.ThrowUtils;
-import com.rg.smarts.infrastructure.common.ErrorCode;
-import com.rg.smarts.domain.score.entity.Score;
-import com.rg.smarts.infrastructure.mapper.ScoreMapper;
+import com.rg.smarts.interfaces.vo.ScoreVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +53,11 @@ public class ScoreApplicationServiceImpl implements ScoreApplicationService {
      * @param userId
      * @return
      */
-    public Long getUserPoints(Long userId) {
-        return scoreDomainService.getUserPoints(userId);
+    public ScoreVO getUserPoints(Long userId) {
+        Score score = scoreDomainService.getUserPoints(userId);
+        ScoreVO scoreVO = new ScoreVO();
+        BeanUtils.copyProperties(score, scoreVO);
+        return scoreVO;
     }
 
     @Override

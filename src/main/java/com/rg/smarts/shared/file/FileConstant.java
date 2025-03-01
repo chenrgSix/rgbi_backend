@@ -1,4 +1,4 @@
-package com.rg.smarts.application.file;
+package com.rg.smarts.shared.file;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

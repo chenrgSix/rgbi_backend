@@ -88,7 +88,6 @@ minio:
 langchain4j:
   zhipu:
     apiKey: #
-    model: GLM-4-Flash #
+    chatModel: GLM-4-Flash #
     logRequests: true #
     logResponses: true #
-

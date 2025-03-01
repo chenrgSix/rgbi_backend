@@ -2,7 +2,7 @@ package com.rg.smarts.domain.llm.service.impl;
 
 import com.rg.smarts.domain.llm.provider.AIProvider;
 import com.rg.smarts.domain.llm.service.LlmDomainService;
-import com.rg.smarts.infrastructure.manager.AiManager;
+
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

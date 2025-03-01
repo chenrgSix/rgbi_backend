@@ -2,7 +2,7 @@ package com.rg.smarts.application.score;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.rg.smarts.domain.score.entity.Score;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.rg.smarts.interfaces.vo.ScoreVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -34,7 +34,7 @@ public interface ScoreApplicationService{
      * @param userId
      * @return
      */
-    Long getUserPoints(Long userId);
+    ScoreVO getUserPoints(Long userId);
     /**
      * 添加
      *

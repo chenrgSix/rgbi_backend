@@ -37,12 +37,25 @@ create table if not exists chart
     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete    tinyint  default 0                 not null comment '是否删除'
 ) comment '图表信息表' collate = utf8mb4_unicode_ci;
+
+# 积分
 CREATE TABLE score (
-                       id  bigint auto_increment comment 'id' primary key,
-                       userId bigint(20) NOT NULL,
-                       scoreTotal bigint(20) NOT NULL,
-                       isSign tinyint(4) NOT NULL DEFAULT '0' COMMENT '0表示未签到，1表示已签到',
-                       createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-                       updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-                       isDelete    tinyint  default 0                 not null comment '是否删除'
+   id  bigint auto_increment comment 'id' primary key,
+   userId bigint(20) NOT NULL,
+   scoreTotal bigint(20) NOT NULL,
+   isSign tinyint(4) NOT NULL DEFAULT '0' COMMENT '0表示未签到，1表示已签到',
+   createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+   updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+       isDelete    tinyint  default 0                 not null comment '是否删除'
 )  comment'积分表' collate = utf8mb4_unicode_ci;
+# chat聊天对话表
+
+CREATE TABLE dialogues(
+     id  bigint auto_increment comment 'id' primary key, -- 会话id
+     userId bigint(20) NOT NULL,  -- 用户id
+     chatContent text NULL,  -- 聊天内容
+     chatTitle varchar(128) NOT NULL, -- 聊天主题
+     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+     isDelete    tinyint  default 0                 not null comment '是否删除'
+)  comment'对话表' collate = utf8mb4_unicode_ci;

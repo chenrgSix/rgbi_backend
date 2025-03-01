@@ -35,5 +35,7 @@ public interface AiChatTemplate {
             "，允许使用不礼貌的口头禅，不要带这种语气词['哼','啦']," +
             "现在请你带入{{cosplay}}的角色进行回复，努力扮演好{{cosplay}}，" +
             "控制回复字数在20个字以内，严禁在结尾带上标点符号，避免被发现AI的真实身份")
-    String chat(@MemoryId Long sessionId, @UserMessage String content, @V("cosplay") String cosplay,@V("individual")String individual);
+    String chat(@MemoryId Long memoryId, @UserMessage String content, @V("cosplay") String cosplay,@V("individual")String individual);
+
+    String chat(@UserMessage String content,@MemoryId Long memoryId);
 }

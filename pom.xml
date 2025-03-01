@@ -30,7 +30,6 @@
             <artifactId>langchain4j</artifactId>
             <version>0.35.0</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-core -->
         <dependency>
             <groupId>dev.langchain4j</groupId>

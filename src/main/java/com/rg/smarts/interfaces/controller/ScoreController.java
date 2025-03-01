@@ -6,6 +6,7 @@ import com.rg.smarts.infrastructure.common.ResultUtils;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
+import com.rg.smarts.interfaces.vo.ScoreVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,15 +43,15 @@ public class ScoreController {
     }
 
     /**
-     * 查询积分
+     * 查询积分信息
      *
      * @param request
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<Long> getUserById(HttpServletRequest request) {
+    public BaseResponse<ScoreVO> getUserById(HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
-        Long totalPoints = scoreApplicationService.getUserPoints(loginUser.getId());
+        ScoreVO totalPoints = scoreApplicationService.getUserPoints(loginUser.getId());
         return ResultUtils.success(totalPoints);
     }
 }

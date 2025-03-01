@@ -17,7 +17,7 @@ import java.time.Duration;
 @Data
 public class ZhiPuConfig {
     private String apiKey;
-    private String model;
+    private String chatModel;
     private Boolean logRequests;
     private Boolean logResponses;
 
@@ -25,7 +25,7 @@ public class ZhiPuConfig {
     ZhipuAiChatModel zhiPuAiChatModel() {
         return ZhipuAiChatModel.builder()
                 .apiKey(apiKey)
-                .model(model)
+                .model(chatModel)
                 .logRequests(logRequests)
                 .logResponses(logResponses)
                 .callTimeout(Duration.ofSeconds(60))
@@ -34,19 +34,5 @@ public class ZhiPuConfig {
                 .readTimeout(Duration.ofSeconds(60))
                 .build();
     }
-
-    @Bean
-    ZhipuAiEmbeddingModel zhipuAiEmbeddingModel() {
-        return ZhipuAiEmbeddingModel.builder()
-                .apiKey(apiKey)
-                .model(model)
-                .callTimeout(Duration.ofSeconds(60))
-                .connectTimeout(Duration.ofSeconds(60))
-                .writeTimeout(Duration.ofSeconds(60))
-                .readTimeout(Duration.ofSeconds(60))
-                .build();
-    }
-
-
 
 }

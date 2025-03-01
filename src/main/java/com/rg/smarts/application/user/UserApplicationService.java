@@ -2,11 +2,10 @@ package com.rg.smarts.application.user;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.interfaces.dto.user.*;
 import com.rg.smarts.interfaces.vo.LoginUserVO;
-import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.interfaces.vo.UserVO;
 import jakarta.servlet.http.HttpServletRequest;
 
