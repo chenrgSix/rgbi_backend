@@ -1,9 +1,6 @@
 package com.rg.smarts.infrastructure.aiservice;
 
-import dev.langchain4j.service.MemoryId;
-import dev.langchain4j.service.SystemMessage;
-import dev.langchain4j.service.UserMessage;
-import dev.langchain4j.service.V;
+import dev.langchain4j.service.*;
 
 /**
  * @Author: czr
@@ -38,4 +35,6 @@ public interface AiChatTemplate {
     String chat(@MemoryId Long memoryId, @UserMessage String content, @V("cosplay") String cosplay,@V("individual")String individual);
 
     String chat(@UserMessage String content,@MemoryId Long memoryId);
+
+    TokenStream chatStream(@UserMessage String content,@MemoryId Long memoryId);
 }

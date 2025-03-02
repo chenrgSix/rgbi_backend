@@ -2,26 +2,6 @@ package com.rg.smarts.infrastructure.manager;
 
 import com.rg.smarts.domain.llm.provider.AIProvider;
 import com.rg.smarts.infrastructure.aiservice.AiChatTemplate;
-import com.rg.smarts.infrastructure.utils.BaseTools;
-
-import dev.langchain4j.agent.tool.ToolExecutionRequest;
-import dev.langchain4j.agent.tool.ToolSpecification;
-import dev.langchain4j.agent.tool.ToolSpecifications;
-
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.message.AiMessage;
-import dev.langchain4j.data.message.ChatMessage;
-import dev.langchain4j.data.message.ToolExecutionResultMessage;
-import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.memory.ChatMemory;
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-import dev.langchain4j.model.zhipu.ZhipuAiChatModel;
-import dev.langchain4j.model.zhipu.ZhipuAiEmbeddingModel;
-import dev.langchain4j.service.AiServices;
-import dev.langchain4j.model.output.Response;
-import dev.langchain4j.service.SystemMessage;
-import dev.langchain4j.service.tool.DefaultToolExecutor;
-import dev.langchain4j.service.tool.ToolExecution;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,21 +14,13 @@ public class AiManager implements AIProvider {
     @Resource
     private AiChatTemplate aiChatTemplate;
 
-    @Resource
-    private ZhipuAiChatModel zhiPuAiChatModel;
-    /**
-     * AI 生成问题的预设条件
-     */
-
     /**
      * 向 AI 发送请求
-     *
      * @return
      */
     @Override
     public String genChart(final String content, Long userId) {
-        AiChatTemplate ai = AiServices.create(AiChatTemplate.class, zhiPuAiChatModel);
-        String chat = ai.genChart(content);
+        String chat = aiChatTemplate.genChart(content);
         // 同步调用
         log.info("智普 AI 返回的结果 {}", chat);
         return chat;
@@ -102,7 +74,7 @@ public class AiManager implements AIProvider {
      */
 
     public String chatAiService(String content,String cosplay,String individua, Long sessionId){
-        String chat = aiChatTemplate.chat(sessionId,content,cosplay,individua);
+        String chat = aiChatTemplate.chat(sessionId, content, cosplay, individua);
         return chat;
     }
 }

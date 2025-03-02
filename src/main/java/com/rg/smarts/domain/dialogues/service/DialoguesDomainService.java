@@ -1,8 +1,7 @@
 package com.rg.smarts.domain.dialogues.service;
 
 import com.rg.smarts.domain.dialogues.entity.Dialogues;
-import com.rg.smarts.interfaces.vo.dialogues.ChatVO;
-import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
+import dev.langchain4j.service.TokenStream;
 
 import java.util.List;
 
@@ -13,11 +12,13 @@ import java.util.List;
 */
 public interface DialoguesDomainService {
 
+    Long getMemoryIdOrAdd(String content, Long userId, Long memoryId);
+
     String chat(String content, Long userId, Long memoryId);
 
-    Long addDialoguesByUserId(String chatContent, Long userId);
+    TokenStream chatStream(String content, Long userId, Long memoryId);
 
-    Boolean existDialoguesByUserId(Long memoryId, Long userId);
+    Long addDialoguesByUserId(String chatContent, Long userId);
 
     Dialogues getDialoguesById(Long memoryId);
 

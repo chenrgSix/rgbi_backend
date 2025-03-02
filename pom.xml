@@ -18,6 +18,7 @@
     </properties>
 
     <dependencies>
+<!--      langchain4j已经默认帮我们引入RxJava了，我们就不要自己引入了-->
         <!--  https://github.com/briqt/xunfei-spark4j      -->
         <dependency>
             <groupId>io.github.briqt</groupId>
@@ -28,6 +29,11 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
+            <version>0.35.0</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-reactor</artifactId>
             <version>0.35.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-core -->

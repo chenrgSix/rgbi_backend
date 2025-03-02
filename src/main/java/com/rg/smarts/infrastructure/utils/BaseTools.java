@@ -23,7 +23,7 @@ public class BaseTools {
     @Value("${langchain4j.zhipu.apiKey}")
     private String apiKey;  //智普AI的apiKey
 
-    @Tool("获取当前时间、日期、几点")
+    @Tool(name="获取当前时间", value = "可以获取到当前具体的时间日期")
     public String getCurrentTime() {
         return LocalDateTime.now().toString();
     }
@@ -43,7 +43,8 @@ public class BaseTools {
         return HttpUtil.get(cityDataUrl);
     }
 
-    @Tool("通过搜索获取网络信息")
+//    @Tool("通过搜索获取网络信息")
+    @Tool(name="搜索引擎",value = "当遇到数据缺失或未知情况时，请使用此工具来搜索并获取网络上的相关信息。此工具适用于填补知识空白、查找详细资料或更新过时信息。")
     public String getWebSearch(String searchContent) {
         /**
          * 智普提供

@@ -4,6 +4,7 @@ import com.rg.smarts.interfaces.vo.dialogues.ChatVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialoguesVO;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -15,9 +16,8 @@ import java.util.List;
 public interface DialoguesApplicationService {
     ChatVO chat(Long memoryId,String content, HttpServletRequest request) ;
 
-    Long addDialoguesByUserId(String chatContent, Long userId);
+    void chatStream(Long memoryId, String content, SseEmitter sseEmitter, HttpServletRequest request);
 
-    Boolean existDialoguesByUserId(Long memoryId, Long userId);
 
     List<DialogueSummaryVO> getBatchOfChatList(HttpServletRequest request);
 
