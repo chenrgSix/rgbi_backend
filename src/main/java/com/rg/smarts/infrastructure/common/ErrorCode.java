@@ -16,8 +16,8 @@ public enum ErrorCode {
     OPERATION_ERROR(50001, "操作失败"),
     A_ENABLE_MODEL_NOT_FOUND(51000, "没有可用的模型"),
     A_MODEL_ALREADY_EXIST(51001, "模型已存在"),
-    B_LLM_SECRET_KEY_NOT_SET(51002, "LLM的secret key没设置");
-
+    B_LLM_SECRET_KEY_NOT_SET(51002, "LLM的secret key没设置"),
+    B_LLM_SERVICE_DISABLED(51003, "当前LLM服务不可用");
     /**
      * 状态码
      */

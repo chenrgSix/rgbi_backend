@@ -63,6 +63,38 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
         aiModelSettingService.addOrUpdate(aiModel);
         return aiModel;
     }
+    @Override
+    public AiModel getAiModelByIdOrThrow(Long id) {
+        AiModel existModel = aiModelRepository.getById(id);
+        if (null == existModel) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        return existModel;
+    }
+    @Override
+    public Boolean updateAiModel(AiModel aiModel) {
+        AiModel oldAiModel = getAiModelByIdOrThrow(aiModel.getId());
+        aiModelRepository.updateById(aiModel);
+        AiModel updatedOne = getAiModelByIdOrThrow(oldAiModel.getId());
+        aiModelSettingService.delete(oldAiModel);
+        aiModelSettingService.addOrUpdate(updatedOne);
+        return true;
+    }
+    public void disable(Long id) {
+        AiModel model = new AiModel();
+        model.setId(id);
+        model.setIsEnable(0);
+        aiModelRepository.updateById(model);
+    }
+
+    public void enable(Long id) {
+        AiModel model = new AiModel();
+        model.setId(id);
+        model.setIsEnable(1);
+        aiModelRepository.updateById(model);
+    }
+
+
     /**
      * 普通聊天，将原始的用户问题及历史消息发送给AI
      */

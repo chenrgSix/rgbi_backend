@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class ChatRequest {
-
+    private String modelName;
     private Long memoryId;
     private String content;
 }

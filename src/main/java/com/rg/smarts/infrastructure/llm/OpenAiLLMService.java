@@ -40,7 +40,7 @@ public class OpenAiLLMService extends AbstractLLMService<OpenAiSetting> {
 
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(modelPlatformSetting.getSecretKey()) && aiModel.getIsEnable();
+        return StringUtils.isNotBlank(modelPlatformSetting.getSecretKey()) && aiModel.getEnable();
     }
 
     @Override

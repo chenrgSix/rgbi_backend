@@ -49,7 +49,7 @@ public class AiModelSettingService {
     public void init(List<AiModel> allModels) {
         this.all = allModels;
         for (AiModel model : all) {
-            if (Boolean.TRUE.equals(model.getIsEnable())) {
+            if (Boolean.TRUE.equals(model.getEnable())) {
                 MODEL_ID_TO_OBJ.put(model.getId(), model);
             } else {
                 MODEL_ID_TO_OBJ.remove(model.getId());

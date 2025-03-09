@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.aimodel.entity;
+package com.rg.smarts.interfaces.dto.ai;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -8,21 +8,14 @@ import java.util.Date;
 
 /**
  * 模型表
- * @TableName ai_model
  */
-@TableName(value ="ai_model")
+
 @Data
-public class AiModel implements Serializable {
+public class AiModelUpdateRequest implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 用户id
-     */
-    private Long userId;
 
     /**
      * 模型名称
@@ -69,29 +62,6 @@ public class AiModel implements Serializable {
      */
     private Integer isEnable;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
 
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    @TableLogic
-    private Integer isDelete;
-
-    public Boolean getEnable() {
-        return this.isEnable == 1;
-    }
-
-    public Boolean getFree() {
-        return this.isFree == 1;
-    }
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.aimodel.entity;
+package com.rg.smarts.interfaces.vo.ai;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -6,17 +6,13 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * 模型表
- * @TableName ai_model
- */
-@TableName(value ="ai_model")
+
 @Data
-public class AiModel implements Serializable {
+public class AiModelVO implements Serializable {
     /**
      * id
      */
-    @TableId(type = IdType.AUTO)
+
     private Long id;
 
     /**
@@ -79,19 +75,6 @@ public class AiModel implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 是否删除
-     */
-    @TableLogic
-    private Integer isDelete;
 
-    public Boolean getEnable() {
-        return this.isEnable == 1;
-    }
-
-    public Boolean getFree() {
-        return this.isFree == 1;
-    }
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

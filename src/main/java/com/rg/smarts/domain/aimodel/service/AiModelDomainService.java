@@ -12,6 +12,10 @@ public interface AiModelDomainService {
 
     AiModel addOne(AiModel aiModel);
 
+    AiModel getAiModelByIdOrThrow(Long id);
+
+    Boolean updateAiModel(AiModel aiModel);
+
     void commonChat(SseAskParams params);
 
     String genChart(String message, Long userId);

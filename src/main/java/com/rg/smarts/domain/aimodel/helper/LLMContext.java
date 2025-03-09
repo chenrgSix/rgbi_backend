@@ -84,9 +84,9 @@ public class LLMContext {
     public static Optional<AbstractLLMService<?>> getFirstEnableAndFree() {
         return NAME_TO_LLM_SERVICE.values().stream().filter(item -> {
             AiModel aiModel = item.getAiModel();
-            if (aiModel.getIsEnable() && aiModel.getIsFree()) {
+            if (aiModel.getEnable() && aiModel.getFree()) {
                 return true;
-            } else return Boolean.TRUE.equals(aiModel.getIsEnable());
+            } else return Boolean.TRUE.equals(aiModel.getEnable());
         }).findFirst();
     }
 }

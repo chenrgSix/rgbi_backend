@@ -63,7 +63,7 @@ CREATE TABLE dialogues(
 # ai模型表--管理员才添加更改
 CREATE TABLE ai_model(
                          id  bigint auto_increment comment 'id' primary key,
-                         userId bigint(20) NOT NULL  comment '用户id',
+                         userId bigint(20) NOT NULL  comment '用户id', -- 当前主要记录是哪个管理员添加的
                          name varchar(64) NULL comment '模型名称',
                          type varchar(64) NULL comment '类别', -- 方便区分文本、图片、多模态
                          setting varchar(512) NULL comment '配置',

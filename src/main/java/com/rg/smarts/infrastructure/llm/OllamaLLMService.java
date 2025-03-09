@@ -23,7 +23,7 @@ public class OllamaLLMService extends AbstractLLMService<OllamaSetting> {
 
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(modelPlatformSetting.getBaseUrl()) && aiModel.getIsEnable();
+        return StringUtils.isNotBlank(modelPlatformSetting.getBaseUrl()) && aiModel.getEnable();
     }
 
     @Override

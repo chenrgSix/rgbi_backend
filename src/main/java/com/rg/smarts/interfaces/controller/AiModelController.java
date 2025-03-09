@@ -1,15 +1,21 @@
 package com.rg.smarts.interfaces.controller;
 
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
+import com.rg.smarts.domain.user.constant.UserConstant;
+import com.rg.smarts.infrastructure.annotation.AuthCheck;
+import com.rg.smarts.infrastructure.common.BaseResponse;
+import com.rg.smarts.infrastructure.common.ResultUtils;
+import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
+import com.rg.smarts.interfaces.vo.ai.AiModelVO;
+import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 /**
  * @Author: czr
@@ -29,9 +35,26 @@ public class AiModelController {
         sseEmitter.onCompletion(() -> {
             log.info("onCompletion:{} 结束", chatRequest.getMemoryId());
         });
-        aiModelApplicationService.chatStream(chatRequest.getMemoryId(), chatRequest.getContent(), sseEmitter, request);
+//
+        aiModelApplicationService.chatStream(chatRequest, sseEmitter, request);
         return sseEmitter;
     }
-
+    @GetMapping(value = "llm/list")
+    public BaseResponse<List<LLMModelVo>> getSupportLLMModel() {
+        List<LLMModelVo> supportLLMModel = aiModelApplicationService.getSupportLLMModel();
+        return ResultUtils.success(supportLLMModel);
+    }
+    @PostMapping(value = "/update")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> updateAiModel(@RequestBody AiModelUpdateRequest aiModelUpdateRequest) {
+        Boolean b = aiModelApplicationService.updateAiModel(aiModelUpdateRequest);
+        return ResultUtils.success(b);
+    }
+    @GetMapping(value = "/get/vo")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<AiModelVO> getAiModelById(Long modelId) {
+        AiModelVO aiModelById = aiModelApplicationService.getAiModelById(modelId);
+        return ResultUtils.success(aiModelById);
+    }
 
 }

@@ -7,11 +7,6 @@ public interface LlmConstant {
 
     public static final String DEFAULT_MODEL = "GLM-4-Flash";
 
-    public static final List<String> DALLE2_CREATE_IMAGE_SIZES = List.of("256x256", "512x512", "1024x1024");
-
-    public static final List<String> DALLE3_CREATE_IMAGE_SIZES = List.of("1024x1024", "1024x1792", "1792x1024");
-
-
     public static class SysConfigKey {
         private SysConfigKey() {
         }

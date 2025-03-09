@@ -30,7 +30,7 @@ public class ZhiPuLLMService extends AbstractLLMService<ZhiPuAiSetting> {
 
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(modelPlatformSetting.getSecretKey()) && aiModel.getIsEnable();
+        return StringUtils.isNotBlank(modelPlatformSetting.getSecretKey()) && aiModel.getEnable();
     }
 
     @Override

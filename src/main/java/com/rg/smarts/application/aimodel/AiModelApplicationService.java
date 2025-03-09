@@ -2,8 +2,14 @@ package com.rg.smarts.application.aimodel;
 
 import com.rg.smarts.domain.aimodel.entity.AiModel;
 import com.rg.smarts.interfaces.dto.ai.AiModelAddRequest;
+import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
+import com.rg.smarts.interfaces.dto.ai.ChatRequest;
+import com.rg.smarts.interfaces.vo.ai.AiModelVO;
+import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 /**
 * @author czr
@@ -14,7 +20,13 @@ public interface AiModelApplicationService {
     String genChart(String message, Long userId);
     AiModel addOne(AiModelAddRequest aiModelAddRequest);
 
-    void chatStream(Long memoryId, String content, SseEmitter sseEmitter, HttpServletRequest request);
+    Boolean updateAiModel(AiModelUpdateRequest aiModelUpdateRequest);
+
+    AiModelVO getAiModelById(Long aiModelId);
+
+    List<LLMModelVo> getSupportLLMModel();
+
+    void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request);
 
     void init();
 }

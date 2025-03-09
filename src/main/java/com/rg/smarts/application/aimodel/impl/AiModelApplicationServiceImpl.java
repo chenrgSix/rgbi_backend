@@ -1,21 +1,31 @@
 package com.rg.smarts.application.aimodel.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.rg.smarts.application.dialogues.DialoguesApplicationService;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.aimodel.constant.LlmConstant;
 import com.rg.smarts.domain.aimodel.entity.AiModel;
+import com.rg.smarts.domain.aimodel.helper.LLMContext;
 import com.rg.smarts.domain.aimodel.model.AssistantChatParams;
 import com.rg.smarts.domain.aimodel.model.SseAskParams;
 import com.rg.smarts.domain.aimodel.service.AiModelDomainService;
 import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.infrastructure.common.ErrorCode;
+import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.interfaces.dto.ai.AiModelAddRequest;
+import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
+import com.rg.smarts.interfaces.dto.ai.ChatRequest;
+import com.rg.smarts.interfaces.vo.ai.AiModelVO;
+import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 /**
  * @author czr
@@ -45,17 +55,53 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     }
 
     @Override
-    public void chatStream(Long memoryId, String content, SseEmitter sseEmitter, HttpServletRequest request) {
+    public Boolean updateAiModel(AiModelUpdateRequest aiModelUpdateRequest) {
+        AiModel aiModel = new AiModel();
+        BeanUtils.copyProperties(aiModelUpdateRequest,aiModel);
+        return aiModelDomainService.updateAiModel(aiModel);
+    }
+    @Override
+    public AiModelVO getAiModelById(Long aiModelId) {
+        AiModel aiModel = aiModelDomainService.getAiModelByIdOrThrow(aiModelId);
+        AiModelVO aiModelVO = new AiModelVO();
+        BeanUtils.copyProperties(aiModel, aiModelVO);
+        return aiModelVO;
+    }
+    @Override
+    public List<LLMModelVo> getSupportLLMModel() {
+        return LLMContext.getAllServices().values().stream().map(item -> {
+            AiModel aiModel = item.getAiModel();
+            LLMModelVo modelInfo = new LLMModelVo();
+            modelInfo.setModelId(aiModel.getId());
+            modelInfo.setModelName(aiModel.getName());
+            modelInfo.setModelPlatform(aiModel.getPlatform());
+            modelInfo.setIsEnable(aiModel.getIsEnable());
+            modelInfo.setIsFree(aiModel.getIsFree());
+            return modelInfo;
+        }).toList();
+    }
+
+    @Override
+    public void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
-        Long validMemoryId = dialoguesApplicationService.getMemoryIdOrAdd(content, loginUser.getId(), memoryId);
         SseAskParams sseAskParams = new SseAskParams();
         sseAskParams.setUserId(loginUser.getId());
-        // todo先默认使用GLM-4-Flash
         sseAskParams.setModelName(LlmConstant.DEFAULT_MODEL);
+        if (StrUtil.isNotBlank(chatRequest.getModelName())){
+            AiModel aiModel = LLMContext.getAllServices().get(chatRequest.getModelName()).getAiModel();
+            if (!aiModel.getEnable()){
+                throw new BusinessException(ErrorCode.B_LLM_SERVICE_DISABLED);
+            }
+            sseAskParams.setModelName(chatRequest.getModelName());
+        }
         sseAskParams.setSseEmitter(sseEmitter);
+        Long validMemoryId = dialoguesApplicationService.getMemoryIdOrAdd(
+                chatRequest.getContent(),
+                loginUser.getId(),
+                chatRequest.getMemoryId());
         AssistantChatParams assistantChatParams = new AssistantChatParams();
         assistantChatParams.setMemoryId(validMemoryId);
-        assistantChatParams.setContext(content);
+        assistantChatParams.setContext(chatRequest.getContent());
         sseAskParams.setAssistantChatParams(assistantChatParams);
 
         aiModelDomainService.commonChat(sseAskParams);
