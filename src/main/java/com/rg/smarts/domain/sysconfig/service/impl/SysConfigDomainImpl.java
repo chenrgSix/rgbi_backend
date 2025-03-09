@@ -1,10 +1,15 @@
 package com.rg.smarts.domain.sysconfig.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.domain.aimodel.utils.LocalCache;
 import com.rg.smarts.domain.sysconfig.entity.SysConfig;
 import com.rg.smarts.domain.sysconfig.repository.SysConfigRepository;
 import com.rg.smarts.domain.sysconfig.service.SysConfigDomainService;
+import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.infrastructure.common.ErrorCode;
+import com.rg.smarts.infrastructure.exception.BusinessException;
+import com.rg.smarts.interfaces.dto.sysconfig.SysConfigUpdateRequest;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,6 +51,27 @@ public class SysConfigDomainImpl  implements SysConfigDomainService {
             }
         }
 
+    }
+
+    @Override
+    public void updateConfig(String configName,String configValue) {
+        LambdaQueryWrapper<SysConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysConfig::getName, configName);
+        SysConfig sysConfig = sysConfigRepository.getOne(lambdaQueryWrapper);
+        if (null == sysConfig) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        SysConfig updateOne = new SysConfig();
+        updateOne.setId(sysConfig.getId());
+        updateOne.setValue(configValue);
+        sysConfigRepository.updateById(updateOne);
+        loadAndCache();
+    }
+
+    @Override
+    public Page<SysConfig> listSysConfigByPage(long current, long size, LambdaQueryWrapper<SysConfig> queryWrapper) {
+        return sysConfigRepository.page(new Page<>(current, size),
+                queryWrapper);
     }
 
 }
