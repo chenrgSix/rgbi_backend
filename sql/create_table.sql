@@ -52,10 +52,39 @@ CREATE TABLE score (
 
 CREATE TABLE dialogues(
      id  bigint auto_increment comment 'id' primary key, -- 会话id
-     userId bigint(20) NOT NULL,  -- 用户id
-     chatContent text NULL,  -- 聊天内容
-     chatTitle varchar(128) NOT NULL, -- 聊天主题
+     userId bigint(20) NOT NULL comment '用户id',  -- 用户id
+     chatContent text NULL comment '聊天内容',  -- 聊天内容
+     chatTitle varchar(128) NOT NULL comment '聊天主题', -- 聊天主题
      createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
      updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
      isDelete    tinyint  default 0                 not null comment '是否删除'
 )  comment'对话表' collate = utf8mb4_unicode_ci;
+
+# ai模型表--管理员才添加更改
+CREATE TABLE ai_model(
+                         id  bigint auto_increment comment 'id' primary key,
+                         userId bigint(20) NOT NULL  comment '用户id',
+                         name varchar(64) NULL comment '模型名称',
+                         type varchar(64) NULL comment '类别', -- 方便区分文本、图片、多模态
+                         setting varchar(512) NULL comment '配置',
+                         remark varchar(512) NULL comment '备注',
+                         platform varchar(45) NULL comment '平台',
+                         maxInputTokens  int           default 0 comment '最大输入token',
+                         maxOutputTokens int           default 0 comment '最大输出token',
+                         isFree TINYINT(1) NULL comment '是否免费',
+                         isEnable TINYINT(1) NULL comment '是否启用',
+                         createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+                         updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+                         isDelete    tinyint  default 0                 not null comment '是否删除'
+)  comment'模型表' collate = utf8mb4_unicode_ci;
+
+#
+CREATE TABLE sys_config
+(
+    id  bigint auto_increment comment 'id' primary key,
+    name        varchar(100)  default ''             not null comment '配置项名称',
+    value       varchar(1000) default ''             not null comment '配置项值',
+    createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete    tinyint  default 0                 not null comment '是否删除'
+)comment'系统配置表' collate = utf8mb4_unicode_ci;;
