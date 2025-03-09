@@ -5,12 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.domain.dialogues.entity.Dialogues;
 import com.rg.smarts.domain.dialogues.repository.DialoguesRepository;
 import com.rg.smarts.domain.dialogues.service.DialoguesDomainService;
-import com.rg.smarts.infrastructure.aiservice.AiChatTemplate;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
-import com.rg.smarts.infrastructure.manager.RedisLimiterManager;
-import dev.langchain4j.service.TokenStream;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +22,7 @@ import java.util.List;
 public class DialoguesDomainServiceImpl implements DialoguesDomainService {
     @Resource
     private DialoguesRepository dialoguesRepository;
-    @Resource
-    private RedisLimiterManager redisLimiterManager;
 
-    @Resource
-    private AiChatTemplate aiChatTemplate;
     @Override
     public Long getMemoryIdOrAdd(String content, Long userId, Long memoryId) {
         // 获取会话id，没有的话就生成
@@ -43,21 +36,7 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
         ThrowUtils.throwIf(dialogues==null, ErrorCode.PARAMS_ERROR, "对话不存在");
         return memoryId;
     }
-    @Override
-    public String chat(String content, Long userId, Long memoryId) {
-        redisLimiterManager.doRateLimit("chat_" + userId);
-        String chatResp = aiChatTemplate.chat(
-                content, memoryId
-        );
-        return chatResp;
-    }
-    @Override
-    public TokenStream chatStream(String content, Long userId, Long memoryId) {
-        redisLimiterManager.doRateLimit("chat_" + userId);
-        return aiChatTemplate.chatStream(
-                content, memoryId
-        );
-    }
+
     @Override
     public Long addDialoguesByUserId(String chatContent, Long userId) {
         // 确保字符串长度大于或等于10
@@ -85,7 +64,7 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
         LambdaQueryWrapper<Dialogues> dialoguesLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
         dialoguesLambdaQueryWrapper.orderByDesc(Dialogues::getCreateTime);
-        Page<Dialogues> dialoguesPage = dialoguesRepository.page(new Page<>(1, 12),
+        Page<Dialogues> dialoguesPage = dialoguesRepository.page(new Page<>(1, 18),
                 dialoguesLambdaQueryWrapper);
         return dialoguesPage.getRecords();
     }

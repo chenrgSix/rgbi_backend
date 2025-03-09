@@ -1,4 +1,4 @@
-package com.rg.smarts.infrastructure.aiservice;
+package com.rg.smarts.domain.aimodel.service;
 
 import dev.langchain4j.service.*;
 
@@ -7,7 +7,7 @@ import dev.langchain4j.service.*;
  * @CreateTime: 2025-02-24
  * @Description: 定义AI模板
  */
-public interface AiChatTemplate {
+public interface IChatAssistant {
     /**
      * AI 生成问题的预设条件
      */

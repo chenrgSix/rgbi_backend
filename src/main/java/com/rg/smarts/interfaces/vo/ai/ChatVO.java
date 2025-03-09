@@ -1,4 +1,4 @@
-package com.rg.smarts.interfaces.vo.dialogues;
+package com.rg.smarts.interfaces.vo.ai;
 
 import lombok.Data;
 

@@ -1,12 +1,9 @@
 package com.rg.smarts.infrastructure.utils;
 
-import cn.hutool.core.lang.UUID;
-import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import dev.langchain4j.agent.tool.Tool;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -20,8 +17,6 @@ import java.util.List;
 @Component
 public class BaseTools {
 
-    @Value("${langchain4j.zhipu.apiKey}")
-    private String apiKey;  //智普AI的apiKey
 
     @Tool(name="获取当前时间", value = "可以获取到当前具体的时间日期")
     public String getCurrentTime() {
@@ -42,34 +37,4 @@ public class BaseTools {
         String cityDataUrl = "https://weather.cma.cn/api/now/" + code;
         return HttpUtil.get(cityDataUrl);
     }
-
-//    @Tool("通过搜索获取网络信息")
-    @Tool(name="搜索引擎",value = "当遇到数据缺失或未知情况时，请使用此工具来搜索并获取网络上的相关信息。此工具适用于填补知识空白、查找详细资料或更新过时信息。")
-    public String getWebSearch(String searchContent) {
-        /**
-         * 智普提供
-         */
-        String url = "https://open.bigmodel.cn/api/paas/v4/tools";
-        // 构建消息内容
-        String json = "{"
-                + "\"request_id\":\"" + UUID.randomUUID().toString() + "\","
-                + "\"tool\":\"web-search-pro\","
-                + "\"stream\":false,"
-                + "\"messages\":["
-                + "{"
-                + "\"role\":\"user\","
-                + "\"content\":\"" + searchContent + "\""
-                + "}"
-                + "]"
-                + "}";
-        String result2 = HttpRequest.post(url)
-                .header("Authorization", apiKey)
-                .body(json)//表单内容
-                .timeout(20000)//超时，毫秒
-                .execute().body();
-        System.out.println(result2);
-        return result2;
-    }
-
-
 }

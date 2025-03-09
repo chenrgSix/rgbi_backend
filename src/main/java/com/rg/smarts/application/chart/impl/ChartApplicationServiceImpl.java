@@ -3,7 +3,7 @@ package com.rg.smarts.application.chart.impl;
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rg.smarts.application.llm.LlmApplicationService;
+import com.rg.smarts.application.aimodel.AiModelApplicationService;
 import com.rg.smarts.application.score.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.application.chart.ChartApplicationService;
@@ -17,7 +17,6 @@ import com.rg.smarts.infrastructure.utils.SqlUtils;
 import com.rg.smarts.interfaces.dto.chart.*;
 import com.rg.smarts.interfaces.vo.BiResponse;
 import com.rg.smarts.infrastructure.common.ErrorCode;
-import com.rg.smarts.infrastructure.manager.AiManager;
 import com.rg.smarts.domain.chart.entity.Chart;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.infrastructure.utils.ExcelUtils;
@@ -62,7 +61,7 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
     @Resource
     private RedisLimiterManager redisLimiterManager;
     @Resource
-    private LlmApplicationService llmApplicationService;
+    private AiModelApplicationService aiModelApplicationService;
 
 
 
@@ -148,7 +147,7 @@ public class ChartApplicationServiceImpl implements ChartApplicationService {
                 return;
             }
             //调用Ai
-            String result = llmApplicationService.genChart(userInput.toString(),loginUser.getId());
+            String result = aiModelApplicationService.genChart(userInput.toString(),loginUser.getId());
             scoreApplicationService.deductPoints(loginUser.getId(), 20L);//调用成功后扣除积分
             String[] split = result.split("￥￥￥￥￥");
             if (split.length<3){

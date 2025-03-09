@@ -14,10 +14,6 @@ public interface DialoguesDomainService {
 
     Long getMemoryIdOrAdd(String content, Long userId, Long memoryId);
 
-    String chat(String content, Long userId, Long memoryId);
-
-    TokenStream chatStream(String content, Long userId, Long memoryId);
-
     Long addDialoguesByUserId(String chatContent, Long userId);
 
     Dialogues getDialoguesById(Long memoryId);

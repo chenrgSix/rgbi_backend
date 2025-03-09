@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rg.smarts.infrastructure.mapper.AiModelMapper">
+
+    <resultMap id="BaseResultMap" type="com.rg.smarts.domain.aimodel.entity.AiModel">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="setting" column="setting" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="platform" column="platform" jdbcType="VARCHAR"/>
+            <result property="maxInputTokens" column="maxInputTokens" jdbcType="INTEGER"/>
+            <result property="maxOutputTokens" column="maxOutputTokens" jdbcType="INTEGER"/>
+            <result property="isFree" column="isFree" jdbcType="TINYINT"/>
+            <result property="isEnable" column="isEnable" jdbcType="TINYINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,name,
+        type,setting,remark,
+        platform,maxInputTokens,maxOutputTokens,
+        isFree,isEnable,createTime,
+        updateTime,isDelete
+    </sql>
+</mapper>

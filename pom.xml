@@ -15,32 +15,39 @@
     <name>intelligent</name>
     <properties>
         <java.version>17</java.version>
+        <langchain4j.version>0.36.2</langchain4j.version>
     </properties>
 
     <dependencies>
 <!--      langchain4j已经默认帮我们引入RxJava了，我们就不要自己引入了-->
-        <!--  https://github.com/briqt/xunfei-spark4j      -->
-        <dependency>
-            <groupId>io.github.briqt</groupId>
-            <artifactId>xunfei-spark4j</artifactId>
-            <version>1.2.0</version>
-        </dependency>
         <!--        https://docs.langchain4j.dev/integrations/document-loaders/file-system-->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+        <!--https://docs.spring.io/spring-ai/reference/getting-started.html-->
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-reactor</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/dev.langchain4j/langchain4j-core -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-zhipu-ai</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+            <version>${langchain4j.version}</version>
         </dependency>
         <!--       redisson -->
         <dependency>
@@ -48,11 +55,6 @@
             <artifactId>redisson</artifactId>
             <version>3.21.3</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-properties-migrator</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,11 +72,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-        <!--https://docs.spring.io/spring-ai/reference/getting-started.html-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.ai</groupId>-->
-<!--            <artifactId>spring-ai-zhipuai-spring-boot-starter</artifactId>-->
-<!--        </dependency>-->
+
         <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter -->
         <!--mybatis-->
         <dependency>

@@ -26,12 +26,6 @@ public class ChartController {
 
     @Resource
     private ChartApplicationService chartApplicationService;
-//    @Resource
-//    private AiManager aiManager;
-//    @GetMapping("/ai/generate")
-//    public String generate(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-//        return aiManager.chatAiService(message, "萌妹","傲娇",1L);
-//    }
 
     /**
      * 智能分析(异步)

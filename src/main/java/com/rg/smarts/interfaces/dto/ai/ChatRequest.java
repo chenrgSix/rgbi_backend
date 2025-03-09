@@ -1,4 +1,4 @@
-package com.rg.smarts.interfaces.dto.chat;
+package com.rg.smarts.interfaces.dto.ai;
 
 import lombok.Data;
 
