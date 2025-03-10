@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author czr
@@ -60,12 +61,20 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
     }
 
     @Override
-    public List<Dialogues> getBatchOfChatList(Long userId) {
+    public Page<Dialogues> getBatchOfChatList( int current,int pageSize,Long userId) {
         LambdaQueryWrapper<Dialogues> dialoguesLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
         dialoguesLambdaQueryWrapper.orderByDesc(Dialogues::getCreateTime);
-        Page<Dialogues> dialoguesPage = dialoguesRepository.page(new Page<>(1, 18),
+        Page<Dialogues> dialoguesPage = dialoguesRepository.page(new Page<>(current, pageSize),
                 dialoguesLambdaQueryWrapper);
-        return dialoguesPage.getRecords();
+        return dialoguesPage;
+    }
+
+    @Override
+    public Boolean deleteDialogueById(Long id, Long userId) {
+        Dialogues optById = dialoguesRepository.getById(id);
+        ThrowUtils.throwIf(optById==null, ErrorCode.NOT_FOUND_ERROR);
+        ThrowUtils.throwIf(!optById.getUserId().equals(userId), ErrorCode.NO_AUTH_ERROR);
+        return dialoguesRepository.removeById(id);
     }
 }

@@ -115,7 +115,6 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
                 .build();
         TokenStream tokenStream = assistant.chatStream(assistantChatParams.getContext(), assistantChatParams.getMemoryId());
         tokenStream.onNext((String token) -> {
-                    System.out.println(token);
                     try {
                         if (token != null) {
                             ChatVO chatVO = new ChatVO();
@@ -124,6 +123,7 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
                             params.getSseEmitter().send(SseEmitter.event().data(chatVO));
                         }
                     } catch (IOException e) {
+                        params.getSseEmitter().complete();
                         throw new RuntimeException(e);
                     }
                 })

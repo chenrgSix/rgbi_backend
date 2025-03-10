@@ -1,5 +1,6 @@
 package com.rg.smarts.domain.dialogues.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.domain.dialogues.entity.Dialogues;
 import dev.langchain4j.service.TokenStream;
 
@@ -18,5 +19,7 @@ public interface DialoguesDomainService {
 
     Dialogues getDialoguesById(Long memoryId);
 
-    List<Dialogues> getBatchOfChatList(Long userId);
+    Page<Dialogues> getBatchOfChatList(int current, int pageSize, Long userId);
+
+    Boolean deleteDialogueById(Long id, Long id1);
 }
