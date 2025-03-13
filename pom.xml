@@ -31,8 +31,18 @@
             <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
             <version>${langchain4j.version}</version>
         </dependency>
-        <!--https://docs.spring.io/spring-ai/reference/getting-started.html-->
-
+<!--        https://docs.langchain4j.dev/integrations/embedding-models/in-process-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+<!--        https://docs.langchain4j.dev/integrations/embedding-stores/elasticsearch-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-elasticsearch</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-reactor</artifactId>
