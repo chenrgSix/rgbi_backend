@@ -111,8 +111,7 @@ public class MinioUtil {
 
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(objectName)//文件名
-                    .contentType("image/png")//文件类型
-                    .bucket("image")//桶名词  与minio创建的名词一致
+                    .bucket(this.bucketName)//桶名词  与minio创建的名词一致
                     .stream(fileInputStream, file.length(), -1) //文件流
                     .build();
             //文件名称相同会覆盖

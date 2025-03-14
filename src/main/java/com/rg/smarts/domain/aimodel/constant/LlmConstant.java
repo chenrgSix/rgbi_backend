@@ -1,13 +1,12 @@
 package com.rg.smarts.domain.aimodel.constant;
 
-import java.util.List;
 
 public interface LlmConstant {
 
 
-    public static final String DEFAULT_MODEL = "GLM-4-Flash";
+    String DEFAULT_MODEL = "GLM-4-Flash";
 
-    public static class SysConfigKey {
+    class SysConfigKey {
         private SysConfigKey() {
         }
         public static final String DEEPSEEK_SETTING = "deepseek_setting";
@@ -16,9 +15,8 @@ public interface LlmConstant {
         public static final String OLLAMA_SETTING = "ollama_setting";
     }
 
-    public static final String[] POI_DOC_TYPES = {"doc", "docx", "ppt", "pptx", "xls", "xlsx"};
 
-    public static class ModelPlatform {
+    class ModelPlatform {
         private ModelPlatform() {
         }
         public static final String DEEPSEEK = "deepseek";
@@ -27,7 +25,7 @@ public interface LlmConstant {
         public static final String OLLAMA = "ollama";
     }
 
-    public static class ModelType {
+    class ModelType {
         private ModelType() {
         }
         public static final String TEXT = "text";
@@ -38,10 +36,10 @@ public interface LlmConstant {
     /**
      * 默认的最大输入token数
      */
-    public static final int LLM_MAX_INPUT_TOKENS_DEFAULT = 4096;
+    int LLM_MAX_INPUT_TOKENS_DEFAULT = 4096;
 
-    public static final String LLM_INPUT_TYPE_TEXT = "text";
-    public static final String LLM_INPUT_TYPE_IMAGE = "image";
-    public static final String LLM_INPUT_TYPE_AUDIO = "audio";
-    public static final String LLM_INPUT_TYPE_VIDEO = "video";
+    String LLM_INPUT_TYPE_TEXT = "text";
+    String LLM_INPUT_TYPE_IMAGE = "image";
+    String LLM_INPUT_TYPE_AUDIO = "audio";
+    String LLM_INPUT_TYPE_VIDEO = "video";
 }

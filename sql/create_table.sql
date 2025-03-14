@@ -87,4 +87,19 @@ CREATE TABLE sys_config
     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete    tinyint  default 0                 not null comment '是否删除'
-)comment'系统配置表' collate = utf8mb4_unicode_ci;;
+)comment'系统配置表' collate = utf8mb4_unicode_ci;
+
+CREATE TABLE file_upload
+(
+    id  bigint auto_increment comment 'id' primary key,
+    userId bigint(20) NOT NULL  comment '用户id',
+    fileName            varchar(255) not null comment '文件名，实际存储此文件的名称，带后缀',
+    displayName         varchar(255) not null comment '原始名称，不带后缀',
+    fileSuffix          varchar(32) comment '文件的类型（后缀）',
+    fileSize            bigint default 0,
+    path                 varchar(255) not null comment '文件的路径',
+    fileDesc            varchar(255) default null,
+    createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete    tinyint  default 0                 not null comment '是否删除'
+)comment'文件表' collate = utf8mb4_unicode_ci;
