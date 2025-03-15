@@ -70,7 +70,11 @@ cos:
     secretKey: #
     region: #
     bucket: #
-
+minio:
+  endpoint: http://127.0.0.1:9000 #Minio服务所在地址
+  bucketName: image #存储桶名称
+  accessKey: admin #访问的key===username
+  secretKey: rrrrrrg1. #访问的秘钥===password
 # 接口文档配置
 knife4j:
   enable: true
@@ -83,8 +87,4 @@ knife4j:
         api-rule-resources:
           - com.rg.intelligent.controller
   #  production: true
-minio:
-  endpoint: http://127.0.0.1:9000 #Minio服务所在地址
-  bucketName: image #存储桶名称
-  accessKey: admin #访问的key===username
-  secretKey: rrrrrrg1. #访问的秘钥===password
+

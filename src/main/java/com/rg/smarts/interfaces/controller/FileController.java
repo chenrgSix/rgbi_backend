@@ -34,7 +34,7 @@ public class FileController {
      * @return
      */
     @PostMapping("/upload/minio")
-    @AuthCheck(mustRole = UserConstant.USER_LOGIN_STATE)
+    @AuthCheck(mustRole = UserConstant.DEFAULT_ROLE)
     public BaseResponse<String> uploadFileMinio(@RequestPart("file") MultipartFile multipartFile,
                                                 @RequestPart(name = "desc", required = false) String desc,
                                                 HttpServletRequest request) {
@@ -50,7 +50,7 @@ public class FileController {
      * @return
      */
     @PostMapping("/upload/document")
-    @AuthCheck(mustRole = UserConstant.USER_LOGIN_STATE)
+    @AuthCheck(mustRole = UserConstant.DEFAULT_ROLE)
     public BaseResponse<String> uploadDocument(@RequestPart("file") MultipartFile multipartFile,
                                                 @RequestPart(name = "desc", required = false) String desc,
                                                 HttpServletRequest request) {

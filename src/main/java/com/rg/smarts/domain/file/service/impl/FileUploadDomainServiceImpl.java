@@ -63,11 +63,8 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
             }
             // 填充属性
             String type =FileTypeUtil.getType(file);
-            filename = FileNameUtil.getName(file);
             long fileSize = FileUtil.size(file);
-
             FileUpload fileUpload = new FileUpload();
-
             fileUpload.setUserId(userId);
             fileUpload.setFileName(filename);
             fileUpload.setDisplayName(displayFileName);
