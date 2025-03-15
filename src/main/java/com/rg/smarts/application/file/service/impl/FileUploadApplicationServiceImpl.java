@@ -1,7 +1,10 @@
 package com.rg.smarts.application.file.service.impl;
 
+import com.rg.smarts.application.embedding.service.EmbeddingApplicationService;
 import com.rg.smarts.application.file.service.FileUploadApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
+import com.rg.smarts.domain.file.constant.FileConstant;
+import com.rg.smarts.domain.file.entity.FileUpload;
 import com.rg.smarts.domain.file.service.FileUploadDomainService;
 import com.rg.smarts.domain.user.entity.User;
 import jakarta.annotation.Resource;
@@ -20,14 +23,16 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
     private FileUploadDomainService fileUploadDomainService;
     @Resource
     private UserApplicationService userApplicationService;
-
+    @Resource
+    private EmbeddingApplicationService embeddingApplicationService;
     @Override
     public String uploadPictureFile(MultipartFile multipartFile,
                                     String desc,
                                     HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
         fileUploadDomainService.validPictureFile(multipartFile);
-        return fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), desc);
+        FileUpload fileUpload = fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.USER_PICTURE_BUCKET_NAME, desc);
+        return fileUpload.getPath();
     }
 
     @Override
@@ -36,8 +41,9 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
                                      HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
         fileUploadDomainService.validDocumentFile(multipartFile);
-        String result = fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), desc);
-        // TODO 补充文档向量化
-        return result;
+        FileUpload fileUpload = fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.DOC_BUCKET_NAME, desc);
+        // 补充文档向量化
+        embeddingApplicationService.loadDocument(fileUpload.getPath(),fileUpload.getFileSuffix());
+        return fileUpload.getPath();
     }
 }

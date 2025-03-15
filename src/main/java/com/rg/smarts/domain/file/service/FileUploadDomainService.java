@@ -1,5 +1,6 @@
 package com.rg.smarts.domain.file.service;
 
+import com.rg.smarts.domain.file.entity.FileUpload;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,8 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileUploadDomainService {
 
     @Transactional(rollbackFor = Exception.class)
-    String uploadFile(MultipartFile multipartFile,
-                      Long userId, String desc);
+    FileUpload uploadFile(MultipartFile multipartFile,
+                          Long userId, String bucketName, String desc);
 
     void validDocumentFile(MultipartFile multipartFile);
 

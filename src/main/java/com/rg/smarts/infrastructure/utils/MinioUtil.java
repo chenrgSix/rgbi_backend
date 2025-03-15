@@ -28,8 +28,6 @@ public class MinioUtil {
 
     @Resource
     private MinioClient minioClient;
-    @Value("${minio.bucketName}")
-    private String bucketName;
 
     @Value("${minio.endpoint}")
     private String endpoint;
@@ -103,7 +101,7 @@ public class MinioUtil {
      * @param file 文件
      * @return Boolean
      */
-    public String upload(String key, File file) {
+    public String upload(String key,String bucketName, File file) {
         String objectName = key.replace(" ", "");
         FileInputStream fileInputStream=null;
         try {
@@ -111,12 +109,12 @@ public class MinioUtil {
 
             PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                     .object(objectName)//文件名
-                    .bucket(this.bucketName)//桶名词  与minio创建的名词一致
+                    .bucket(bucketName)//桶名词  与minio创建的名词一致
                     .stream(fileInputStream, file.length(), -1) //文件流
                     .build();
             //文件名称相同会覆盖
             minioClient.putObject(putObjectArgs);
-            return String.format("%s/%s/%s",this.endpoint, this.bucketName,key);
+            return String.format("%s/%s/%s",this.endpoint, bucketName,key);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

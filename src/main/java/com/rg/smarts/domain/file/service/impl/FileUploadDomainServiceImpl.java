@@ -4,7 +4,7 @@ import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.StrUtil;
-import com.rg.smarts.domain.file.constant.DocConstant;
+import com.rg.smarts.domain.file.constant.FileConstant;
 import com.rg.smarts.domain.file.entity.FileUpload;
 import com.rg.smarts.domain.file.repository.FileUploadRepository;
 import com.rg.smarts.domain.file.service.FileUploadDomainService;
@@ -44,25 +44,25 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String uploadFile(MultipartFile multipartFile,
-                             Long userId, String desc) {
+    public FileUpload uploadFile(MultipartFile multipartFile,
+                             Long userId, String bucketName,String desc) {
         // TODO 判断是否上传过已有的相同文件
         // 文件目录：根据业务、用户来划分
-        String uuid = RandomStringUtils.randomAlphanumeric(8);
         String displayFileName = multipartFile.getOriginalFilename();
-        String filename = uuid + "-" + displayFileName;
+        String type = FileNameUtil.getSuffix(displayFileName);
+        String uuid = RandomStringUtils.randomAlphanumeric(10);
+        String filename = String.format("%s.%s",uuid, type);
         String filepath = String.format("%s/%s", userId, filename);
         File file = null;
         try {
             // 上传文件
             file = File.createTempFile(filepath, null);
             multipartFile.transferTo(file);
-            String uploadUrl = minioUtil.upload(filepath, file);
+            String uploadUrl = minioUtil.upload(filepath,bucketName, file);
             if(StrUtil.isBlank(uploadUrl)){
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
             }
             // 填充属性
-            String type =FileTypeUtil.getType(file);
             long fileSize = FileUtil.size(file);
             FileUpload fileUpload = new FileUpload();
             fileUpload.setUserId(userId);
@@ -73,8 +73,8 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
             fileUpload.setPath(uploadUrl);
             fileUpload.setFileDesc(desc);
             fileUploadRepository.save(fileUpload);
-            // 返回可访问地址
-            return uploadUrl;
+            // 返回对象
+            return fileUpload;
         } catch (Exception e) {
             log.error("file upload error, filepath = " + filepath, e);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
@@ -97,12 +97,13 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
         // 文件大小
         long fileSize = multipartFile.getSize();
         // 文件后缀
-        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        String displayFileName = multipartFile.getOriginalFilename();
+        String fileSuffix = FileNameUtil.getSuffix(displayFileName);
 
-        if (fileSize > (DocConstant.DOC_BASE_SIZE*DocConstant.DOC_MAX_SIZE)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, String.format("文件大小不能超过%d M!", DocConstant.DOC_BASE_SIZE));
+        if (fileSize > (FileConstant.DOC_BASE_SIZE* FileConstant.DOC_MAX_SIZE)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, String.format("文件大小不能超过%d M!", FileConstant.DOC_BASE_SIZE));
         }
-        if (!DocConstant.DOC_TYPES.contains(fileSuffix)) {
+        if (!FileConstant.DOC_TYPES.contains(fileSuffix)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "无法解析的文件类型");
         }
     }
@@ -116,7 +117,8 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
         // 文件大小
         long fileSize = multipartFile.getSize();
         // 文件后缀
-        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        String displayFileName = multipartFile.getOriginalFilename();
+        String fileSuffix = FileNameUtil.getSuffix(displayFileName);
         final long ONE_M = 1024 * 1024L;
         if (fileSize > ONE_M) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件大小不能超过 1M");
