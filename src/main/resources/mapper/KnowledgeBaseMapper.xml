@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rg.smarts.infrastructure.mapper.KnowledgeBaseMapper">
+
+    <resultMap id="BaseResultMap" type="com.rg.smarts.domain.knowledge.entity.KnowledgeBase">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="isPublic" column="isPublic" jdbcType="TINYINT"/>
+            <result property="docNum" column="docNum" jdbcType="INTEGER"/>
+            <result property="ingestMaxSegment" column="ingestMaxSegment" jdbcType="INTEGER"/>
+            <result property="ingestMaxOverlap" column="ingestMaxOverlap" jdbcType="INTEGER"/>
+            <result property="ingestModelName" column="ingestModelName" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userId,title,remark,
+        isPublic,docNum,ingestMaxSegment,
+        ingestMaxOverlap,ingestModelName,createTime,
+        updateTime,isDelete
+    </sql>
+</mapper>

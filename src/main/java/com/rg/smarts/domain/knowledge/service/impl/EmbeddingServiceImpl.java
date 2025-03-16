@@ -1,7 +1,7 @@
-package com.rg.smarts.domain.embedding.service.impl;
+package com.rg.smarts.domain.knowledge.service.impl;
 
-import com.rg.smarts.domain.embedding.constant.EmbeddingConstant;
-import com.rg.smarts.domain.embedding.service.EmbeddingDomainService;
+import com.rg.smarts.domain.knowledge.constant.EmbeddingConstant;
+import com.rg.smarts.domain.knowledge.service.EmbeddingService;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.UrlDocumentLoader;
@@ -20,7 +20,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.rg.smarts.domain.embedding.constant.EmbeddingConstant.DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS;
+import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS;
 
 /**
  * @Author: czr
@@ -30,7 +30,7 @@ import static com.rg.smarts.domain.embedding.constant.EmbeddingConstant.DOCUMENT
 @Slf4j
 //@AllArgsConstructor
 @Service
-public class EmbeddingDomainServiceImpl implements EmbeddingDomainService {
+public class EmbeddingServiceImpl implements EmbeddingService {
     // TODO 后续可自配置
     private final EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
@@ -41,7 +41,7 @@ public class EmbeddingDomainServiceImpl implements EmbeddingDomainService {
      * <a href="https://docs.langchain4j.dev/tutorials/rag#embedding-store-ingestor">...</a>
      * 进行数据分块
      * @param document 文档
-     * @param overlap  token重叠部分
+     * @param overlap  token重叠部分 即比如一段话分成三个部分，每相邻两部分之间可以共享的最大内容量（交集）
      */
     private void ingest(Document document, int overlap) {
         DocumentSplitter documentSplitter = DocumentSplitters.recursive(DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS, overlap, new OpenAiTokenizer(OpenAiChatModelName.GPT_3_5_TURBO));
@@ -66,6 +66,8 @@ public class EmbeddingDomainServiceImpl implements EmbeddingDomainService {
         // TODO overlap是知识库配置之一
         result.metadata().put("文档id","66666");
         result.metadata().put("kb_item_uuid","66666");
+// Metadata { metadata = {kb_item_uuid=66666, 文档id=66666, url=http://127.0.0.1:9000/document/1890713823228264450/0ws3dQvtRP.docx} }
+        String string = result.metadata().toString();
         this.ingest(result, EmbeddingConstant.DEFAULT_INGEST_OVERLAP);
         return result;
     }

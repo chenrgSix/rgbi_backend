@@ -1,6 +1,5 @@
 package com.rg.smarts.application.file.service.impl;
 
-import com.rg.smarts.application.embedding.service.EmbeddingApplicationService;
 import com.rg.smarts.application.file.service.FileUploadApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.file.constant.FileConstant;
@@ -23,8 +22,8 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
     private FileUploadDomainService fileUploadDomainService;
     @Resource
     private UserApplicationService userApplicationService;
-    @Resource
-    private EmbeddingApplicationService embeddingApplicationService;
+
+
     @Override
     public String uploadPictureFile(MultipartFile multipartFile,
                                     String desc,
@@ -36,14 +35,16 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
     }
 
     @Override
-    public String uploadDocumentFile(MultipartFile multipartFile,
+    public FileUpload uploadDocumentFile(MultipartFile multipartFile,
                                      String desc,
                                      HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
         fileUploadDomainService.validDocumentFile(multipartFile);
-        FileUpload fileUpload = fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.DOC_BUCKET_NAME, desc);
-        // 补充文档向量化
-        embeddingApplicationService.loadDocument(fileUpload.getPath(),fileUpload.getFileSuffix());
-        return fileUpload.getPath();
+        return fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.DOC_BUCKET_NAME, desc);
+    }
+
+    @Override
+    public void deleteFile(Long userId, String fileName) {
+        fileUploadDomainService.deleteFile(userId, fileName);
     }
 }

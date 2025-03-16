@@ -42,19 +42,4 @@ public class FileController {
         return ResultUtils.success(result);
     }
 
-    /**
-     * 上传文档，为知识库服务
-     * @param multipartFile
-     * @param desc
-     * @param request
-     * @return
-     */
-    @PostMapping("/upload/document")
-    @AuthCheck(mustRole = UserConstant.DEFAULT_ROLE)
-    public BaseResponse<String> uploadDocument(@RequestPart("file") MultipartFile multipartFile,
-                                                @RequestPart(name = "desc", required = false) String desc,
-                                                HttpServletRequest request) {
-        String result = fileUploadApplicationService.uploadDocumentFile(multipartFile, desc, request);
-        return ResultUtils.success(result);
-    }
 }

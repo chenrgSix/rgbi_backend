@@ -35,6 +35,9 @@ public interface ScoreApplicationService{
      * @return
      */
     ScoreVO getUserPoints(HttpServletRequest request);
+
+    ScoreVO getUserPoints(Long userId);
+
     /**
      * 添加
      *

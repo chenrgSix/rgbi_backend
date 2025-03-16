@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.embedding.constant;
+package com.rg.smarts.domain.knowledge.constant;
 
 import java.util.Arrays;
 import java.util.List;

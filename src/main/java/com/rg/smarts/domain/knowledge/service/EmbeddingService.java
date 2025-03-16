@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.embedding.service;
+package com.rg.smarts.domain.knowledge.service;
 
 import dev.langchain4j.data.document.Document;
 
@@ -7,7 +7,7 @@ import dev.langchain4j.data.document.Document;
  * @CreateTime: 2025-03-13
  * @Description: 定义向量服务的接口类
  */
-public interface EmbeddingDomainService {
+public interface EmbeddingService {
 
     Document loadDocument(String type, String path);
 }

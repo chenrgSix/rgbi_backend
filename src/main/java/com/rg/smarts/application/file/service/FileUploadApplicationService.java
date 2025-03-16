@@ -1,5 +1,6 @@
 package com.rg.smarts.application.file.service;
 
+import com.rg.smarts.domain.file.entity.FileUpload;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +16,9 @@ public interface FileUploadApplicationService{
                              String desc,
                              HttpServletRequest request);
 
-    String uploadDocumentFile(MultipartFile multipartFile,
-                              String desc,
-                              HttpServletRequest request);
+    FileUpload uploadDocumentFile(MultipartFile multipartFile,
+                                  String desc,
+                                  HttpServletRequest request);
+
+    void deleteFile(Long userId, String fileName);
 }

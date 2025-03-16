@@ -45,30 +45,12 @@ public interface UserDomainService{
 
 
     /**
-     * 获取当前登录用户（允许未登录）
-     *
-     * @param request
-     * @return
-     */
-    User getLoginUserPermitNull(HttpServletRequest request);
-
-
-    /**
-     * 是否为管理员
-     *
-     * @param user
-     * @return
-     */
-    boolean isAdmin(User user);
-
-    /**
      * 用户注销
      *
      * @param request
      * @return
      */
     boolean userLogout(HttpServletRequest request);
-
 
 
     /**
@@ -78,20 +60,6 @@ public interface UserDomainService{
      * @return
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
-
-    /**
-     * 删除用户
-     * @param deleteRequest
-     * @return
-     */
-    Boolean deleteUser( DeleteRequest deleteRequest);
-
-    /**
-     * 更新用户
-     * @param userUpdateRequest
-     * @return
-     */
-    Boolean updateUser( UserUpdateRequest userUpdateRequest);
 
     /**
      * 根据id获取用户

@@ -1,6 +1,5 @@
 package com.rg.smarts.domain.file.service.impl;
 
-import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.util.StrUtil;
@@ -33,9 +32,13 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
     @Resource
     private FileUploadRepository fileUploadRepository;
 
-
     @Resource
     private MinioUtil minioUtil;
+    @Override
+    public void deleteFile(Long userId,String fileName) {
+        String filepath = String.format("%s/%s", userId, fileName);
+        minioUtil.remove(filepath);
+    }
     /**
      * 文件上传
      * @param multipartFile

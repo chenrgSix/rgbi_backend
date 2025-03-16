@@ -49,18 +49,20 @@ public class ScoreApplicationServiceImpl implements ScoreApplicationService {
 
     /**
      * 查看积分
-     *
-     * @param request
      * @return
      */
-    public ScoreVO getUserPoints(HttpServletRequest request) {
-        User loginUser = userApplicationService.getLoginUser(request);
-        Score score = scoreDomainService.getUserPoints(loginUser.getId());
+    @Override
+    public ScoreVO getUserPoints(Long userId) {
+        Score score = scoreDomainService.getUserPoints(userId);
         ScoreVO scoreVO = new ScoreVO();
         BeanUtils.copyProperties(score, scoreVO);
         return scoreVO;
     }
-
+    @Override
+    public ScoreVO getUserPoints(HttpServletRequest request) {
+        User loginUser = userApplicationService.getLoginUser(request);
+        return this.getUserPoints(loginUser.getId());
+    }
     @Override
     public Boolean save(Score score) {
         return scoreDomainService.save(score);
