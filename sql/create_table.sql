@@ -62,20 +62,20 @@ CREATE TABLE dialogues(
 
 # ai模型表--管理员才添加更改
 CREATE TABLE ai_model(
-                         id  bigint auto_increment comment 'id' primary key,
-                         userId bigint(20) NOT NULL  comment '用户id', -- 当前主要记录是哪个管理员添加的
-                         name varchar(64) NULL comment '模型名称',
-                         type varchar(64) NULL comment '类别', -- 方便区分文本、图片、多模态
-                         setting varchar(512) NULL comment '配置',
-                         remark varchar(512) NULL comment '备注',
-                         platform varchar(45) NULL comment '平台',
-                         maxInputTokens  int           default 0 comment '最大输入token',
-                         maxOutputTokens int           default 0 comment '最大输出token',
-                         isFree TINYINT(1) NULL comment '是否免费',
-                         isEnable TINYINT(1) NULL comment '是否启用',
-                         createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-                         updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-                         isDelete    tinyint  default 0                 not null comment '是否删除'
+     id  bigint auto_increment comment 'id' primary key,
+     userId bigint(20) NOT NULL  comment '用户id', -- 当前主要记录是哪个管理员添加的
+     name varchar(64) NULL comment '模型名称',
+     type varchar(64) NULL comment '类别', -- 方便区分文本、图片、多模态
+     setting varchar(512) NULL comment '配置',
+     remark varchar(512) NULL comment '备注',
+     platform varchar(45) NULL comment '平台',
+     maxInputTokens  int           default 0 comment '最大输入token',
+     maxOutputTokens int           default 0 comment '最大输出token',
+     isFree TINYINT(1) NULL comment '是否免费',
+     isEnable TINYINT(1) NULL comment '是否启用',
+     createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+     isDelete    tinyint  default 0                 not null comment '是否删除'
 )  comment'模型表' collate = utf8mb4_unicode_ci;
 
 #
@@ -103,3 +103,31 @@ CREATE TABLE file_upload
     updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     isDelete    tinyint  default 0                 not null comment '是否删除'
 )comment'文件表' collate = utf8mb4_unicode_ci;
+
+CREATE TABLE knowledge_base
+(
+    id  bigint auto_increment comment 'id' primary key,
+    userId  bigint(20) NOT NULL COMMENT '用户ID',
+    title VARCHAR(250) NOT NULL COMMENT '标题',
+    remark TEXT NULL COMMENT '备注',
+    isPublic TINYINT(1) DEFAULT 0 NOT NULL COMMENT '是否公开，0：否；1：是',
+    docNum INT DEFAULT 0 NOT NULL COMMENT '文档数量',
+    ingestMaxSegment INT DEFAULT 1024 NOT NULL COMMENT '最大分割大小',
+    ingestMaxOverlap INT DEFAULT 0 NOT NULL COMMENT '最大重叠大小',
+    ingestModelName VARCHAR(45) DEFAULT '' NOT NULL COMMENT '模型名称',
+    createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete    tinyint  default 0                 not null comment '是否删除'
+) COMMENT='知识库';
+
+CREATE TABLE knowledge_document (
+   id  bigint auto_increment comment 'id' primary key,
+   kbId  bigint(20) NOT NULL COMMENT '知识库ID',
+   userId  bigint(20) NOT NULL COMMENT '用户ID',
+   fileId  bigint(20) NULL COMMENT '文件ID',
+   docType VARCHAR(255) NOT NULL COMMENT '文档类型',
+   status tinyint default 0  NOT NULL COMMENT '文档状态 -1：解析失败 0：未解析 1：解析中 2：解析完成',
+   createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+   updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+   isDelete    tinyint  default 0                 not null comment '是否删除'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='知识文档';
