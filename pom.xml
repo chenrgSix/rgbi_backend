@@ -59,6 +59,18 @@
             <artifactId>langchain4j-ollama</artifactId>
             <version>${langchain4j.version}</version>
         </dependency>
+        <!--https://docs.langchain4j.dev/integrations/document-parsers/apache-poi#apis-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-document-parser-apache-poi</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+        <!--https://docs.langchain4j.dev/integrations/document-parsers/apache-pdfbox#apis-->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
         <!--       redisson -->
         <dependency>
             <groupId>org.redisson</groupId>
