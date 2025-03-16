@@ -4,7 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
-import com.rg.smarts.application.score.ScoreApplicationService;
+import com.rg.smarts.application.user.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.application.chart.ChartApplicationService;
 import com.rg.smarts.domain.chart.service.ChartDomainService;

@@ -1,10 +1,10 @@
-package com.rg.smarts.application.score.impl;
+package com.rg.smarts.application.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.rg.smarts.application.score.ScoreApplicationService;
+import com.rg.smarts.application.user.ScoreApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
-import com.rg.smarts.domain.score.entity.Score;
-import com.rg.smarts.domain.score.service.ScoreDomainService;
+import com.rg.smarts.domain.user.entity.Score;
+import com.rg.smarts.domain.user.service.ScoreDomainService;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.interfaces.vo.ScoreVO;
 import jakarta.annotation.Resource;
@@ -50,11 +50,12 @@ public class ScoreApplicationServiceImpl implements ScoreApplicationService {
     /**
      * 查看积分
      *
-     * @param userId
+     * @param request
      * @return
      */
-    public ScoreVO getUserPoints(Long userId) {
-        Score score = scoreDomainService.getUserPoints(userId);
+    public ScoreVO getUserPoints(HttpServletRequest request) {
+        User loginUser = userApplicationService.getLoginUser(request);
+        Score score = scoreDomainService.getUserPoints(loginUser.getId());
         ScoreVO scoreVO = new ScoreVO();
         BeanUtils.copyProperties(score, scoreVO);
         return scoreVO;

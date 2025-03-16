@@ -1,6 +1,6 @@
 package com.rg.smarts.infrastructure.mapper;
 
-import com.rg.smarts.domain.score.entity.Score;
+import com.rg.smarts.domain.user.entity.Score;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
