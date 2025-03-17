@@ -1,5 +1,6 @@
 package com.rg.smarts.interfaces.dto.knowledge;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,6 +9,7 @@ import java.io.Serializable;
  * 知识库创建
  */
 @Data
+@AllArgsConstructor
 public class KnowledgeBaseAddRequest implements Serializable {
 
     /**

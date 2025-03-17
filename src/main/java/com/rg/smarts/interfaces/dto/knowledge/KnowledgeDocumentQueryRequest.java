@@ -1,32 +1,28 @@
 package com.rg.smarts.interfaces.dto.knowledge;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rg.smarts.infrastructure.common.PageRequest;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 /**
- * 查询请求
+ * 知识文档
  */
+
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-public class KnowledgeBaseQueryRequest extends PageRequest implements Serializable {
+public class KnowledgeDocumentQueryRequest extends PageRequest implements Serializable {
+    /**
+     * 知识库ID
+     */
+    private Long kbId;
 
     /**
-     * 标题
+     * 文档状态 -1：解析失败 0：未解析 1：解析中 2：解析完成
      */
-    private String title;
-
-
-    /**
-     * 模型名称
-     */
-    private String ingestModelName;
-
-
+    private Integer status;
 
     private static final long serialVersionUID = 1L;
 }

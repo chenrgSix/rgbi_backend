@@ -13,8 +13,8 @@ public enum DocumentStatusEnum {
 
     FAIL("解析失败", -1),
     READY("未解析", 0),
-    RUN("解析中", 1),
-    COMPLETE("解析完成", 2);
+    RUN("正在解析中", 1),
+    COMPLETE("已解析完成", 2);
     private final String text;
 
     private final Integer value;

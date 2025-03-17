@@ -8,7 +8,9 @@ import com.rg.smarts.infrastructure.common.ResultUtils;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
-import com.rg.smarts.interfaces.vo.KnowledgeBaseVO;
+import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
+import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -56,18 +58,34 @@ public class KnowledgeBaseController {
      * todo 补充知识库删除
      */
 
+    @PostMapping(value = "/doc/page")
+    public BaseResponse<Page<KnowledgeDocumentVO>> listDocByPage(@RequestBody KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request) {
+        Page<KnowledgeDocumentVO> result = knowledgeBaseApplicationService.listDocByPage(knowledgeDocumentQueryRequest,request);
+        return ResultUtils.success(result);
+    }
     /**
      * 上传文档
      * @param multipartFile
      * @param request
      * @return
      */
-    @PostMapping("/upload")
+    @PostMapping("/doc/upload")
     public BaseResponse<Boolean> addDocument(@RequestPart("file") MultipartFile multipartFile,
                                              KnowledgeAddDocumentRequest knowledgeAddDocumentRequest,
                                              HttpServletRequest request) {
 //        knowledgeAddDocumentRequest.setKbId(1901258879333826561L);
         Boolean result = knowledgeBaseApplicationService.addDocument(multipartFile, knowledgeAddDocumentRequest, request);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 解析文档
+     * @param request
+     * @return
+     */
+    @PostMapping("/doc/load")
+    public BaseResponse<Boolean> loadDocument(Long docId,HttpServletRequest request) {
+        Boolean result = knowledgeBaseApplicationService.loadDocument(docId,request);
         return ResultUtils.success(result);
     }
 }

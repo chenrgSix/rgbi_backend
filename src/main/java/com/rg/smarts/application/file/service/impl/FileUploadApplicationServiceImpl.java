@@ -6,6 +6,8 @@ import com.rg.smarts.domain.file.constant.FileConstant;
 import com.rg.smarts.domain.file.entity.FileUpload;
 import com.rg.smarts.domain.file.service.FileUploadDomainService;
 import com.rg.smarts.domain.user.entity.User;
+import com.rg.smarts.infrastructure.common.ErrorCode;
+import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,11 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
         fileUploadDomainService.validDocumentFile(multipartFile);
         return fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.DOC_BUCKET_NAME, desc);
     }
-
+    @Override
+    public String  getFilePathById(Long id) {
+        ThrowUtils.throwIf(id==null, ErrorCode.PARAMS_ERROR);
+        return fileUploadDomainService.getFilePathById(id);
+    }
     @Override
     public void deleteFile(Long userId, String fileName) {
         fileUploadDomainService.deleteFile(userId, fileName);

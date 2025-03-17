@@ -1,6 +1,5 @@
-package com.rg.smarts.interfaces.vo;
+package com.rg.smarts.interfaces.vo.knowledge;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;

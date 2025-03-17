@@ -9,5 +9,5 @@ import dev.langchain4j.data.document.Document;
  */
 public interface EmbeddingService {
 
-    Document loadDocument(String type, String path);
+    void ingest(Document document, int overlap);
 }

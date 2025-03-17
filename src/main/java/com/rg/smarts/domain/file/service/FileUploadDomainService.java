@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface FileUploadDomainService {
 
-    void deleteFile(Long userId,String fileName);
+    String getFilePathById(Long id);
+
+    void deleteFile(Long userId, String fileName);
 
     @Transactional(rollbackFor = Exception.class)
     FileUpload uploadFile(MultipartFile multipartFile,

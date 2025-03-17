@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
-import com.rg.smarts.interfaces.vo.KnowledgeBaseVO;
+import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
+import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,4 +25,9 @@ public interface KnowledgeBaseApplicationService {
     KnowledgeBaseVO getKnowledgeDocumentById(Long id, HttpServletRequest request);
 
     Boolean addDocument(MultipartFile multipartFile, KnowledgeAddDocumentRequest knowledgeAddDocumentRequest, HttpServletRequest request);
+
+    //  进行向量化
+    Boolean loadDocument(Long docId,HttpServletRequest request);
+
+    Page<KnowledgeDocumentVO> listDocByPage(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request);
 }

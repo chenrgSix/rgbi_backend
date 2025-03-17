@@ -9,6 +9,7 @@ import com.rg.smarts.domain.file.repository.FileUploadRepository;
 import com.rg.smarts.domain.file.service.FileUploadDomainService;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
+import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import com.rg.smarts.infrastructure.utils.MinioUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,14 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
 
     @Resource
     private MinioUtil minioUtil;
+
+    @Override
+    public String getFilePathById(Long id) {
+        FileUpload fileUpload = fileUploadRepository.getById(id);
+        ThrowUtils.throwIf(fileUpload==null,ErrorCode.NOT_FOUND_ERROR);
+        return fileUpload.getPath();
+    }
+
     @Override
     public void deleteFile(Long userId,String fileName) {
         String filepath = String.format("%s/%s", userId, fileName);
