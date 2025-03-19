@@ -1,9 +1,10 @@
 package com.rg.smarts.interfaces.dto.knowledge;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rg.smarts.infrastructure.common.PageRequest;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,7 +14,13 @@ import java.io.Serializable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class KnowledgeDocumentQueryRequest extends PageRequest implements Serializable {
+    /**
+     * id
+     */
+    private Long id;
     /**
      * 知识库ID
      */

@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileUploadDomainService {
 
     String getFilePathById(Long id);
-
+    FileUpload getFileById(Long id);
     void deleteFile(Long userId, String fileName);
 
     @Transactional(rollbackFor = Exception.class)

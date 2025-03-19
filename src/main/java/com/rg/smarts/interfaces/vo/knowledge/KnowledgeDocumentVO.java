@@ -50,7 +50,15 @@ public class KnowledgeDocumentVO implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+    /**
+     * 文档名称
+     */
+    private String displayName;
 
+    /**
+     * 文档大小
+     */
+    private Long fileSize;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

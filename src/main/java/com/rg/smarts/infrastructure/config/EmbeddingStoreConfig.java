@@ -19,6 +19,7 @@ public class EmbeddingStoreConfig {
     public ElasticsearchEmbeddingStore elasticsearchEmbeddingStore() {
         return ElasticsearchEmbeddingStore.builder()
                 .restClient(client)
+//                .indexName("rg") //指定索引名称
                 .build();
     }
 }

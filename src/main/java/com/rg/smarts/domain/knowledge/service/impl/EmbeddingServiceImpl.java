@@ -33,9 +33,11 @@ public class EmbeddingServiceImpl implements EmbeddingService {
     @Resource
     private EmbeddingStore<TextSegment> embeddingStore;
 
+
     /**
      * <a href="https://docs.langchain4j.dev/tutorials/rag#embedding-store-ingestor">...</a>
      * 进行数据分块
+     *
      * @param document 文档
      * @param overlap  token重叠部分 即比如一段话分成三个部分，每相邻两部分之间可以共享的最大内容量（交集）
      */
@@ -43,12 +45,13 @@ public class EmbeddingServiceImpl implements EmbeddingService {
     public void ingest(Document document, int overlap) {
         DocumentSplitter documentSplitter = DocumentSplitters.recursive(DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS, overlap, new OpenAiTokenizer(OpenAiChatModelName.GPT_3_5_TURBO));
         EmbeddingStoreIngestor embeddingStoreIngestor = EmbeddingStoreIngestor.builder()
-                .documentSplitter(documentSplitter)
+                .documentSplitter(documentSplitter) //对文档的处理
                 .embeddingModel(embeddingModel)
                 .embeddingStore(embeddingStore)
                 .build();
         IngestionResult ingest = embeddingStoreIngestor.ingest(document);
         log.info(ingest.toString());
     }
+
 
 }

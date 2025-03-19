@@ -28,7 +28,7 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
     public Long getMemoryIdOrAdd(String content, Long userId, Long memoryId) {
         // 获取会话id，没有的话就生成
         if (memoryId == null) {
-            return this.addDialoguesByUserId(content, userId);
+            return addDialoguesByUserId(content, userId);
         }
         LambdaQueryWrapper<Dialogues> dialoguesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         dialoguesLambdaQueryWrapper.eq(Dialogues::getId, memoryId);

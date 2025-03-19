@@ -44,6 +44,12 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
     }
 
     @Override
+    public FileUpload getFileById(Long id) {
+        FileUpload fileUpload = fileUploadRepository.getById(id);
+        return fileUpload;
+    }
+
+    @Override
     public void deleteFile(Long userId,String fileName) {
         String filepath = String.format("%s/%s", userId, fileName);
         minioUtil.remove(filepath);

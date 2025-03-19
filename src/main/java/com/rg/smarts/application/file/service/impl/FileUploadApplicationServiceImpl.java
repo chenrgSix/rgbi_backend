@@ -50,6 +50,11 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
         return fileUploadDomainService.getFilePathById(id);
     }
     @Override
+    public FileUpload  getFileById(Long id) {
+        ThrowUtils.throwIf(id==null, ErrorCode.PARAMS_ERROR);
+        return fileUploadDomainService.getFileById(id);
+    }
+    @Override
     public void deleteFile(Long userId, String fileName) {
         fileUploadDomainService.deleteFile(userId, fileName);
     }

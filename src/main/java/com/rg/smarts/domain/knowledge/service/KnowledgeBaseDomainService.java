@@ -2,6 +2,7 @@ package com.rg.smarts.domain.knowledge.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeBase;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeDocument;
 import dev.langchain4j.data.document.Document;
@@ -29,4 +30,7 @@ public interface KnowledgeBaseDomainService {
 
 
     Page<KnowledgeDocument> getKnowledgeDocPage(Page<KnowledgeDocument> knowledgeDocumentPage, QueryWrapper<KnowledgeDocument> queryKnowledgeDocWrapper);
+
+    DocumentInfoDTO getDocumentInfo(KnowledgeDocument document,int current,int pageSize);
+
 }

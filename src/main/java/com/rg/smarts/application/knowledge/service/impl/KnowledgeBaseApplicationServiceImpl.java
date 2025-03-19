@@ -3,6 +3,7 @@ package com.rg.smarts.application.knowledge.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.file.service.FileUploadApplicationService;
+import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
 import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.file.entity.FileUpload;
@@ -21,6 +22,7 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
 import jakarta.annotation.Resource;
@@ -75,7 +77,7 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     public Page<KnowledgeBaseVO> listKnowledgeBaseByPage(KnowledgeBaseQueryRequest knowledgeBaseQueryRequest, HttpServletRequest request) {
         long current = knowledgeBaseQueryRequest.getCurrent();
         long size = knowledgeBaseQueryRequest.getPageSize();
-        QueryWrapper<KnowledgeBase> queryWrapper = this.getQueryKnowledgeBaseWrapper(knowledgeBaseQueryRequest);
+        QueryWrapper<KnowledgeBase> queryWrapper = getQueryKnowledgeBaseWrapper(knowledgeBaseQueryRequest);
         // 可见范围（自己创建的，或者公开的）
         User loginUser = userApplicationService.getLoginUser(request);
         queryWrapper.and(i->{
@@ -163,7 +165,7 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
             String text = DocumentStatusEnum.getEnumByValue(knowledgeDocument.getStatus()).getText();
             throw new BusinessException(ErrorCode.OPERATION_ERROR,text);
         }
-        Boolean allowed = this.isAllowed(knowledgeDocument.getKbId(), request);
+        Boolean allowed = isAllowed(knowledgeDocument.getKbId(), request);
         ThrowUtils.throwIf(!allowed, ErrorCode.NO_AUTH_ERROR);
         String filePath = fileUploadApplicationService.getFilePathById(knowledgeDocument.getFileId());
         knowledgeBaseDomainService.loadDocument(knowledgeDocument, filePath);
@@ -174,22 +176,41 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     public Page<KnowledgeDocumentVO> listDocByPage(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request) {
         Long kbId = knowledgeDocumentQueryRequest.getKbId();
         ThrowUtils.throwIf(kbId==null, ErrorCode.PARAMS_ERROR,"知识库id为空");
-        Boolean allowed = this.isAllowed(kbId, request);
+        Boolean allowed = isAllowed(kbId, request);
         ThrowUtils.throwIf(!allowed, ErrorCode.PARAMS_ERROR,"知识库id为空");
         int current = knowledgeDocumentQueryRequest.getCurrent();
         int pageSize = knowledgeDocumentQueryRequest.getPageSize();
-        QueryWrapper<KnowledgeDocument> queryKnowledgeDocWrapper = this.getQueryKnowledgeDocWrapper(knowledgeDocumentQueryRequest);
+        QueryWrapper<KnowledgeDocument> queryKnowledgeDocWrapper = getQueryKnowledgeDocWrapper(knowledgeDocumentQueryRequest);
         Page<KnowledgeDocument> knowledgeDocPage=knowledgeBaseDomainService.getKnowledgeDocPage(new Page<>(current, pageSize),queryKnowledgeDocWrapper);
 
         List<KnowledgeDocument> records = knowledgeDocPage.getRecords();
         List<KnowledgeDocumentVO> knowledgeDocumentVOList = records.stream().map(knowledgeDocument -> {
             KnowledgeDocumentVO knowledgeDocumentVO = new KnowledgeDocumentVO();
             BeanUtils.copyProperties(knowledgeDocument, knowledgeDocumentVO);
+            FileUpload fileUpload = fileUploadApplicationService.getFileById(knowledgeDocument.getFileId());
+            knowledgeDocumentVO.setDisplayName(fileUpload.getDisplayName());
+            knowledgeDocumentVO.setFileSize(fileUpload.getFileSize());
             return knowledgeDocumentVO;
         }).toList();
         Page<KnowledgeDocumentVO> knowledgeDocumentVOPage = new Page<>(current, pageSize, knowledgeDocPage.getTotal());
         knowledgeDocumentVOPage.setRecords(knowledgeDocumentVOList);
         return knowledgeDocumentVOPage;
+    }
+
+    @Override
+    public DocumentInfoVO getDocumentInfo(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request) {
+        Long docId = knowledgeDocumentQueryRequest.getId();
+        int pageSize = knowledgeDocumentQueryRequest.getPageSize();
+        int current = knowledgeDocumentQueryRequest.getCurrent();
+        KnowledgeDocument document = knowledgeBaseDomainService.getKnowledgeDocumentById(docId);
+        FileUpload fileUpload = fileUploadApplicationService.getFileById(document.getFileId());
+        Boolean allowed = isAllowed(document.getKbId(), request);
+        ThrowUtils.throwIf(!allowed, ErrorCode.NO_AUTH_ERROR);
+        DocumentInfoDTO documentInfoDTO = knowledgeBaseDomainService.getDocumentInfo(document,current,pageSize);
+        documentInfoDTO.setDisplayName(fileUpload.getDisplayName());
+        documentInfoDTO.setFileSize(fileUpload.getFileSize());
+
+        return documentInfoDTO.toVO();
     }
 
     private QueryWrapper<KnowledgeBase> getQueryKnowledgeBaseWrapper(KnowledgeBaseQueryRequest knowledgeBase) {
@@ -219,6 +240,7 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
                 sortField);
         return queryWrapper;
     }
+
     /**
      * 是否允许操作
      * @param kb_id

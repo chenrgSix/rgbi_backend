@@ -9,6 +9,7 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
 import jakarta.annotation.Resource;
@@ -63,6 +64,13 @@ public class KnowledgeBaseController {
         Page<KnowledgeDocumentVO> result = knowledgeBaseApplicationService.listDocByPage(knowledgeDocumentQueryRequest,request);
         return ResultUtils.success(result);
     }
+    @PostMapping (value = "/doc/info")
+    public BaseResponse<DocumentInfoVO> getDocumentInfo(@RequestBody KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request) {
+        DocumentInfoVO result = knowledgeBaseApplicationService.getDocumentInfo(knowledgeDocumentQueryRequest,request);
+        return ResultUtils.success(result);
+    }
+
+
     /**
      * 上传文档
      * @param multipartFile

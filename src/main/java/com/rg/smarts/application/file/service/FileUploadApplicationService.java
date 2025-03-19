@@ -21,6 +21,6 @@ public interface FileUploadApplicationService{
                                   HttpServletRequest request);
 
     String  getFilePathById(Long id);
-
+    FileUpload  getFileById(Long id);
     void deleteFile(Long userId, String fileName);
 }
