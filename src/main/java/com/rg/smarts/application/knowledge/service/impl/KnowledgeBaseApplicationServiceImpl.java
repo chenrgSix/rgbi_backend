@@ -203,13 +203,9 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         int pageSize = knowledgeDocumentQueryRequest.getPageSize();
         int current = knowledgeDocumentQueryRequest.getCurrent();
         KnowledgeDocument document = knowledgeBaseDomainService.getKnowledgeDocumentById(docId);
-        FileUpload fileUpload = fileUploadApplicationService.getFileById(document.getFileId());
         Boolean allowed = isAllowed(document.getKbId(), request);
         ThrowUtils.throwIf(!allowed, ErrorCode.NO_AUTH_ERROR);
         DocumentInfoDTO documentInfoDTO = knowledgeBaseDomainService.getDocumentInfo(document,current,pageSize);
-        documentInfoDTO.setDisplayName(fileUpload.getDisplayName());
-        documentInfoDTO.setFileSize(fileUpload.getFileSize());
-
         return documentInfoDTO.toVO();
     }
 

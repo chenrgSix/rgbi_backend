@@ -5,24 +5,42 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
  * 知识文档
  */
-@EqualsAndHashCode(callSuper = true)
+
 @Data
-public class DocumentInfoVO extends KnowledgeDocumentVO implements Serializable{
+public class DocumentInfoVO implements Serializable{
     private List<DocumentChunk> chunks;
-    /**
-     * 文档名称
-     */
-    private String displayName;
 
     /**
-     * 文档大小
+     * id
      */
-    private Long fileSize;
+    private Long id;
+
+
+    /**
+     * 文件ID
+     */
+    private Long fileId;
+
+    /**
+     * 文档类型
+     */
+    private String docType;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
     /**
      * 总页数
      */

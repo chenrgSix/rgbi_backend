@@ -62,15 +62,6 @@ public class DocumentInfoDTO implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 文档名称
-     */
-    private String displayName;
-
-    /**
-     * 文档大小
-     */
-    private Long fileSize;
 
     /**
      * 总页数
@@ -87,14 +78,10 @@ public class DocumentInfoDTO implements Serializable {
         DocumentInfoVO documentInfoVO = new DocumentInfoVO();
         documentInfoVO.setChunks(this.chunks);
         documentInfoVO.setId(this.id);
-        documentInfoVO.setKbId(this.kbId);
         documentInfoVO.setFileId(this.fileId);
         documentInfoVO.setDocType(this.docType);
-        documentInfoVO.setStatus(this.status);
         documentInfoVO.setCreateTime(this.createTime);
         documentInfoVO.setUpdateTime(this.updateTime);
-        documentInfoVO.setDisplayName(this.displayName);
-        documentInfoVO.setFileSize(this.fileSize);
         documentInfoVO.setPages(this.pages);
         documentInfoVO.setSize(this.size);
         documentInfoVO.setCurrent(this.current);
