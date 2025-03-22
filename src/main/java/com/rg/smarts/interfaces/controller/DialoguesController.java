@@ -1,11 +1,10 @@
 package com.rg.smarts.interfaces.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rg.smarts.application.dialogues.DialoguesApplicationService;
+import com.rg.smarts.application.aimodel.DialoguesApplicationService;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.infrastructure.common.ResultUtils;
-import com.rg.smarts.interfaces.dto.chart.ChartQueryRequest;
 import com.rg.smarts.interfaces.dto.dialogues.DialoguesQueryRequest;
 import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialoguesVO;
@@ -13,8 +12,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 /**

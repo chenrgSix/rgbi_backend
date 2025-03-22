@@ -1,18 +1,15 @@
-package com.rg.smarts.domain.dialogues.service.impl;
+package com.rg.smarts.domain.aimodel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rg.smarts.domain.dialogues.entity.Dialogues;
-import com.rg.smarts.domain.dialogues.repository.DialoguesRepository;
-import com.rg.smarts.domain.dialogues.service.DialoguesDomainService;
+import com.rg.smarts.domain.aimodel.entity.Dialogues;
+import com.rg.smarts.domain.aimodel.repository.DialoguesRepository;
+import com.rg.smarts.domain.aimodel.service.DialoguesDomainService;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author czr

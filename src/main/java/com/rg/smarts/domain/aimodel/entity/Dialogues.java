@@ -1,4 +1,4 @@
-package com.rg.smarts.domain.dialogues.entity;
+package com.rg.smarts.domain.aimodel.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 

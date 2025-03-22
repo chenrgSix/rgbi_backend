@@ -1,10 +1,10 @@
-package com.rg.smarts.application.dialogues.impl;
+package com.rg.smarts.application.aimodel.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rg.smarts.application.dialogues.DialoguesApplicationService;
+import com.rg.smarts.application.aimodel.DialoguesApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
-import com.rg.smarts.domain.dialogues.entity.Dialogues;
-import com.rg.smarts.domain.dialogues.service.DialoguesDomainService;
+import com.rg.smarts.domain.aimodel.entity.Dialogues;
+import com.rg.smarts.domain.aimodel.service.DialoguesDomainService;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.infrastructure.common.ErrorCode;

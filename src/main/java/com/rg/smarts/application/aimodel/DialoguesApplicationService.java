@@ -1,4 +1,4 @@
-package com.rg.smarts.application.dialogues;
+package com.rg.smarts.application.aimodel;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.infrastructure.common.DeleteRequest;
@@ -6,8 +6,6 @@ import com.rg.smarts.interfaces.dto.dialogues.DialoguesQueryRequest;
 import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialoguesVO;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.List;
 
 /**
  * @Author: czr

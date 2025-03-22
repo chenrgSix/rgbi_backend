@@ -1,7 +1,7 @@
-package com.rg.smarts.infrastructure.repository.dialogues;
+package com.rg.smarts.infrastructure.repository.aimodel;
 
-import com.rg.smarts.domain.dialogues.entity.Dialogues;
-import com.rg.smarts.domain.dialogues.repository.DialoguesRepository;
+import com.rg.smarts.domain.aimodel.entity.Dialogues;
+import com.rg.smarts.domain.aimodel.repository.DialoguesRepository;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import jakarta.annotation.Resource;

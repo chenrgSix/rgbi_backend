@@ -1,10 +1,7 @@
-package com.rg.smarts.domain.dialogues.service;
+package com.rg.smarts.domain.aimodel.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rg.smarts.domain.dialogues.entity.Dialogues;
-import dev.langchain4j.service.TokenStream;
-
-import java.util.List;
+import com.rg.smarts.domain.aimodel.entity.Dialogues;
 
 /**
 * @author czr
