@@ -1,6 +1,9 @@
 package com.rg.smarts.domain.knowledge.service;
 
 import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.store.embedding.filter.Filter;
 
 /**
  * @Author: czr
@@ -9,5 +12,9 @@ import dev.langchain4j.data.document.Document;
  */
 public interface EmbeddingService {
 
+    ContentRetriever getContentRetriever(Long kbId);
+
     void ingest(Document document, int overlap);
+
+    Embedding getVectorBySearch(String search);
 }

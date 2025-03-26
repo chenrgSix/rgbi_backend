@@ -6,6 +6,7 @@ import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeBase;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeDocument;
 import dev.langchain4j.data.document.Document;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 
 /**
  * @Author: czr
@@ -20,6 +21,8 @@ public interface KnowledgeBaseDomainService {
     //    解析文档
     void loadDocument(KnowledgeDocument knowledgeDocument, String filePath);
 
+    ContentRetriever getContentRetriever(Long kbId,Long userId);
+
     Boolean verifyIdentity(Long kb_id, Long userId);
 
     Boolean addKnowledgeBase(KnowledgeBase knowledgeBase);
@@ -33,4 +36,5 @@ public interface KnowledgeBaseDomainService {
 
     DocumentInfoDTO getDocumentInfo(KnowledgeDocument document,int current,int pageSize);
 
+    KnowledgeDocument deleteDocument(Long docId, Long userId);
 }

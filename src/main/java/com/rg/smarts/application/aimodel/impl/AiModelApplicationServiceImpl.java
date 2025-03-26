@@ -1,8 +1,9 @@
 package com.rg.smarts.application.aimodel.impl;
 
 import cn.hutool.core.util.StrUtil;
-import com.rg.smarts.application.dialogues.DialoguesApplicationService;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
+import com.rg.smarts.application.aimodel.DialoguesApplicationService;
+import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.aimodel.constant.LlmConstant;
 import com.rg.smarts.domain.aimodel.entity.AiModel;
@@ -18,11 +19,13 @@ import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
 import com.rg.smarts.interfaces.vo.ai.AiModelVO;
 import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -41,6 +44,8 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     private UserApplicationService userApplicationService;
     @Resource
     private DialoguesApplicationService dialoguesApplicationService;
+    @Resource
+    private KnowledgeBaseApplicationService knowledgeBaseApplicationService;
     @Override
     public String genChart(String message, Long userId) {
         return aiModelDomainService.genChart(message, userId);
@@ -80,9 +85,24 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
             return modelInfo;
         }).toList();
     }
-
+    @Transactional
     @Override
     public void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
+        SseAskParams sseAskParams = getSseAskParams(chatRequest, sseEmitter, request);
+        Long kbId = chatRequest.getKbId();
+        if (kbId==null){
+            aiModelDomainService.commonChat(sseAskParams);
+            return;
+        }
+        Long userId = userApplicationService.getLoginUser(request).getId();
+        ragChatStream(kbId,userId,sseAskParams);
+    }
+
+    private void ragChatStream(Long kbId, Long userId,SseAskParams sseAskParams) {
+        ContentRetriever contentRetriever = knowledgeBaseApplicationService.getContentRetriever(kbId,userId);
+        aiModelDomainService.ragChat(sseAskParams,contentRetriever);
+    }
+    protected SseAskParams getSseAskParams(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);
         SseAskParams sseAskParams = new SseAskParams();
         sseAskParams.setUserId(loginUser.getId());
@@ -103,8 +123,7 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
         assistantChatParams.setMemoryId(validMemoryId);
         assistantChatParams.setContext(chatRequest.getContent());
         sseAskParams.setAssistantChatParams(assistantChatParams);
-
-        aiModelDomainService.commonChat(sseAskParams);
+        return sseAskParams;
     }
     @Override
     public void init() {

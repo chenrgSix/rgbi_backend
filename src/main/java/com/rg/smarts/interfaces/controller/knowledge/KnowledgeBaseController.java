@@ -5,10 +5,12 @@ import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationServi
 import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ResultUtils;
+import com.rg.smarts.interfaces.dto.chart.GenChartByAiRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.BiResponse;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
@@ -64,9 +66,16 @@ public class KnowledgeBaseController {
         Page<KnowledgeDocumentVO> result = knowledgeBaseApplicationService.listDocByPage(knowledgeDocumentQueryRequest,request);
         return ResultUtils.success(result);
     }
+
     @PostMapping (value = "/doc/info")
     public BaseResponse<DocumentInfoVO> getDocumentInfo(@RequestBody KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request) {
         DocumentInfoVO result = knowledgeBaseApplicationService.getDocumentInfo(knowledgeDocumentQueryRequest,request);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping (value = "/doc/delete")
+    public BaseResponse<Boolean> deleteDocument(Long docId, HttpServletRequest request) {
+        Boolean result = knowledgeBaseApplicationService.deleteDocument(docId, request);
         return ResultUtils.success(result);
     }
 
@@ -77,6 +86,7 @@ public class KnowledgeBaseController {
      * @param request
      * @return
      */
+
     @PostMapping("/doc/upload")
     public BaseResponse<Boolean> addDocument(@RequestPart("file") MultipartFile multipartFile,
                                              KnowledgeAddDocumentRequest knowledgeAddDocumentRequest,

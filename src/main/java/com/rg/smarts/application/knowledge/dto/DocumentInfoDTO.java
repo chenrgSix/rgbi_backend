@@ -69,6 +69,7 @@ public class DocumentInfoDTO implements Serializable {
     private int pages ;
     private int size ;
     private int current ;
+    private long total ;
 
     private List<DocumentChunk> chunks;
 
@@ -85,6 +86,7 @@ public class DocumentInfoDTO implements Serializable {
         documentInfoVO.setPages(this.pages);
         documentInfoVO.setSize(this.size);
         documentInfoVO.setCurrent(this.current);
+        documentInfoVO.setTotal(this.total);
         return documentInfoVO;
     }
 

@@ -10,8 +10,8 @@ import com.rg.smarts.domain.aimodel.model.SseAskParams;
 import com.rg.smarts.domain.aimodel.repository.AiModelRepository;
 import com.rg.smarts.domain.aimodel.service.AbstractLLMService;
 import com.rg.smarts.domain.aimodel.service.AiModelDomainService;
-import com.rg.smarts.domain.aimodel.service.adi.AiModelSettingService;
 import com.rg.smarts.domain.aimodel.service.IChatAssistant;
+import com.rg.smarts.domain.aimodel.service.adi.AiModelSettingService;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.manager.RedisLimiterManager;
@@ -21,6 +21,7 @@ import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.output.Response;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.TokenStream;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
@@ -49,6 +50,7 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
     private RedisLimiterManager redisLimiterManager;
     @Resource
     private BaseTools baseTools;
+
 
     @Override
     public AiModel addOne(AiModel aiModel) {
@@ -100,19 +102,18 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
      */
     @Override
     public void commonChat(SseAskParams params) {
+        IChatAssistant assistant = getChatAssistant(params);
+        baseChat(params,assistant);
+    }
+    @Override
+    public void ragChat(SseAskParams params, ContentRetriever contentRetriever){
+        // 返回对话模型
+        IChatAssistant assistant = getChatAssistant(params,contentRetriever);
+        baseChat(params,assistant);
+    }
+    private void baseChat(SseAskParams params,IChatAssistant assistant) {
         redisLimiterManager.doRateLimit("chat_" + params.getUserId());
-        AbstractLLMService llmService = LLMContext.getLLMServiceByName(params.getModelName());
         AssistantChatParams assistantChatParams = params.getAssistantChatParams();
-        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
-                .id(memoryId)
-                .maxMessages(50)
-                .chatMemoryStore(chatMemoryStore)
-                .build();
-        IChatAssistant assistant = AiServices.builder(IChatAssistant.class)
-                .streamingChatLanguageModel(llmService.buildStreamingChatLLM(params.getLlmBuilderProperties()))
-                .chatMemoryProvider(chatMemoryProvider)
-                .tools(baseTools)
-                .build();
         TokenStream tokenStream = assistant.chatStream(assistantChatParams.getContext(), assistantChatParams.getMemoryId());
         tokenStream.onNext((String token) -> {
                     try {
@@ -135,6 +136,7 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
                 .start();
     }
 
+
     @Override
     public String genChart(String message, Long userId) {
         //  todo  后面再改
@@ -146,6 +148,35 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
         // 同步调用
         log.info("智普 AI 返回的结果 {}", chat);
         return chat;
+    }
+
+
+    private IChatAssistant getChatAssistant(SseAskParams params, ContentRetriever contentRetriever) {
+        AbstractLLMService llmService = LLMContext.getLLMServiceByName(params.getModelName());
+        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .maxMessages(50)
+                .chatMemoryStore(chatMemoryStore)
+                .build();
+        return AiServices.builder(IChatAssistant.class)
+                .streamingChatLanguageModel(llmService.buildStreamingChatLLM(params.getLlmBuilderProperties()))
+                .chatMemoryProvider(chatMemoryProvider)
+                .contentRetriever(contentRetriever)
+                .tools(baseTools)
+                .build();
+    }
+    private IChatAssistant getChatAssistant(SseAskParams params) {
+        AbstractLLMService llmService = LLMContext.getLLMServiceByName(params.getModelName());
+        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .maxMessages(50)
+                .chatMemoryStore(chatMemoryStore)
+                .build();
+        return AiServices.builder(IChatAssistant.class)
+                .streamingChatLanguageModel(llmService.buildStreamingChatLLM(params.getLlmBuilderProperties()))
+                .chatMemoryProvider(chatMemoryProvider)
+                .tools(baseTools)
+                .build();
     }
     /**
      * 初始化所有模型

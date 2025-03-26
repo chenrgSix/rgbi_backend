@@ -1,5 +1,6 @@
 package com.rg.smarts.interfaces.dto.ai;
 
+import jakarta.validation.constraints.Null;
 import lombok.Data;
 
 /**
@@ -11,5 +12,7 @@ import lombok.Data;
 public class ChatRequest {
     private String modelName;
     private Long memoryId;
+    @Null
+    private Long kbId;
     private String content;
 }

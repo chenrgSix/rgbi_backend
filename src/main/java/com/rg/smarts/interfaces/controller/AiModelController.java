@@ -35,7 +35,6 @@ public class AiModelController {
         sseEmitter.onCompletion(() -> {
             log.info("onCompletion:{} 结束", chatRequest.getMemoryId());
         });
-//
         aiModelApplicationService.chatStream(chatRequest, sseEmitter, request);
         return sseEmitter;
     }

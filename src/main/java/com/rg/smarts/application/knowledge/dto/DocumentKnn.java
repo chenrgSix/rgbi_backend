@@ -11,17 +11,10 @@ import java.util.Map;
 
 @Document(indexName = "default")
 @Data
-public class DocumentChunk {
-
-    @Id
-    private String id;
-
-    @Field(type = FieldType.Float)
-    private List<Float> vector;
+public class DocumentKnn {
 
     @Field(type = FieldType.Text)
     private String text;
-    @Field(type = FieldType.Object)
-    private Map<String, Object> metadata;
+    private Float score;
 
 }

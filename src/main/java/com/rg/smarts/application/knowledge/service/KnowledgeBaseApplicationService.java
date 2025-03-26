@@ -8,6 +8,7 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface KnowledgeBaseApplicationService {
     Boolean addKnowledgeBase(KnowledgeBaseAddRequest knowledgeBaseAddRequest, HttpServletRequest request);
+
+    ContentRetriever getContentRetriever(Long kbId,Long userId);
 
     Page<KnowledgeBaseVO> listKnowledgeBaseByPage(KnowledgeBaseQueryRequest knowledgeBaseQueryRequest, HttpServletRequest request);
 
@@ -33,4 +36,6 @@ public interface KnowledgeBaseApplicationService {
     Page<KnowledgeDocumentVO> listDocByPage(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request);
 
     DocumentInfoVO getDocumentInfo(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request);
+
+    Boolean deleteDocument(long docId, HttpServletRequest request);
 }

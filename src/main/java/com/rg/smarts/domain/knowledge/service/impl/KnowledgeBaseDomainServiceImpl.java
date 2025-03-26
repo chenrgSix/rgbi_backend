@@ -1,9 +1,13 @@
 package com.rg.smarts.domain.knowledge.service.impl;
 
+import co.elastic.clients.elasticsearch._types.KnnQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.knowledge.dto.DocumentChunk;
 import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
+import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.domain.knowledge.constant.EmbeddingConstant;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeBase;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeDocument;
@@ -20,20 +24,24 @@ import dev.langchain4j.data.document.loader.UrlDocumentLoader;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.pdfbox.ApachePdfBoxDocumentParser;
 import dev.langchain4j.data.document.parser.apache.poi.ApachePoiDocumentParser;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
-import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
-import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +49,7 @@ import java.util.List;
  * @CreateTime: 2025-03-16
  * @Description:
  */
+@Slf4j
 @Service
 public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainService {
     @Resource
@@ -109,9 +118,21 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
             throw new BusinessException(ErrorCode.SYSTEM_ERROR,e.getMessage());
         }
     }
+
+    /**
+     * 获取内容检索器
+     * @param kbId
+     * @return
+     */
+    @Override
+    public ContentRetriever getContentRetriever(Long kbId,Long userId){
+        verifyIdentity(kbId,userId);
+        return embeddingService.getContentRetriever(kbId);
+    }
+
     @Override
     public Boolean verifyIdentity(Long kb_id, Long userId){
-        KnowledgeBase knowledgeBaseById = getKnowledgeBaseById(kb_id);
+        KnowledgeBase knowledgeBaseById = knowledgeBaseRepository.getById(kb_id);
         ThrowUtils.throwIf(knowledgeBaseById==null,ErrorCode.NOT_FOUND_ERROR,"知识库不存在");
         return knowledgeBaseById.isVisible(userId);
     }
@@ -136,6 +157,13 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         return knowledgeDocumentRepository.page(knowledgeDocumentPage, queryKnowledgeDocWrapper);
     }
 
+    /**
+     * 查询es中的向量化数据
+     * @param document
+     * @param current
+     * @param pageSize
+     * @return
+     */
     @Override
     public DocumentInfoDTO getDocumentInfo(KnowledgeDocument document,int current,int pageSize) {
         DocumentInfoDTO documentInfoDTO = new DocumentInfoDTO(document);
@@ -163,8 +191,63 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         documentInfoDTO.setChunks(documentChunks);
         documentInfoDTO.setCurrent(current);
         documentInfoDTO.setSize(pageSize);
+        documentInfoDTO.setTotal(totalRecords);
+
         return documentInfoDTO;
     }
 
+    /**
+     * 向量搜索ES
+     * @param search
+     * @param kbId
+     * @return
+     */
+    public List<DocumentKnn> searchDocumentChunk(String search,Long kbId) {
+        if (StringUtils.isBlank(search)){
+            return null;
+        }
+        Embedding vectorBySearch = embeddingService.getVectorBySearch(search);
+        List<Float> vectorAsList = vectorBySearch.vectorAsList();
+        // 构建Term查询
+        Criteria criteria = new Criteria("metadata.kb_id")
+                .is(kbId);
+        // 指定返回的字段
+        String[] filter = {"text"};
+        FetchSourceFilter sourceFilter = new FetchSourceFilter(filter, null);
+        // 将FetchSourceFilter添加到查询中
+        Query query = NativeQuery.builder().withKnnQuery(KnnQuery.of(f -> f.field("vector")
+                .k(5)
+                .numCandidates(100)
+                .queryVector(vectorAsList)
+        )).withQuery(new CriteriaQuery(criteria)).withMinScore(0.85f).build();
 
+        query.addSourceFilter(sourceFilter);
+        SearchHits<DocumentKnn> searchPage = elasticsearchOperations
+                .search(query, DocumentKnn.class);
+        List<DocumentKnn> docs = searchPage.getSearchHits().stream().map(item -> {
+            DocumentKnn content = item.getContent();
+            content.setScore(item.getScore());
+            return content;
+        }).toList();
+        return docs;
+    }
+    @Override
+    public KnowledgeDocument deleteDocument(Long docId,Long userId) {
+        // 构建删除的ID
+        KnowledgeDocument knowledgeDocument = knowledgeDocumentRepository.getById(docId);
+        Long kbId = knowledgeDocument.getKbId();
+        Long fileId = knowledgeDocument.getFileId();
+        KnowledgeBase knowledgeBase = knowledgeBaseRepository.getById(kbId);
+        boolean isMaster= userId.equals(knowledgeBase.getUserId())||userId.equals(knowledgeDocument.getUserId());
+        ThrowUtils.throwIf(!isMaster,ErrorCode.NO_AUTH_ERROR);
+        knowledgeBase.setDocNum(knowledgeBase.getDocNum() - 1);
+        knowledgeBaseRepository.updateById(knowledgeBase);
+        knowledgeDocumentRepository.removeById(docId);
+        Criteria criteria = new Criteria("metadata.doc_id").is(docId);
+        // 指定返回的字段
+        Query query = new CriteriaQuery(criteria);
+        elasticsearchOperations.delete(query, DocumentChunk.class);
+        return knowledgeDocument;
+
+    }
 }

@@ -1,5 +1,6 @@
 package com.rg.smarts.interfaces.vo.knowledge;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,7 +17,10 @@ public class KnowledgeBaseVO implements Serializable {
      * id
      */
     private Long id;
-
+    /**
+     * id
+     */
+    private Long userId;
     /**
      * 标题
      */
@@ -55,11 +59,13 @@ public class KnowledgeBaseVO implements Serializable {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     private static final long serialVersionUID = 1L;

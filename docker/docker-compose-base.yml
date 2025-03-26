@@ -48,7 +48,7 @@ services:
       retries: 3
     restart: unless-stopped
   es01:
-    image: elasticsearch:8.11.3
+    image: elasticsearch:8.15.2
     container_name: bi_es_01
     volumes:
       - ./esdata01:/usr/share/elasticsearch/data

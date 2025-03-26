@@ -25,11 +25,13 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +67,16 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         BeanUtils.copyProperties(knowledgeBaseAddRequest, knowledgeBase);
         knowledgeBase.setUserId(loginUser.getId());
         return knowledgeBaseDomainService.addKnowledgeBase(knowledgeBase);
+    }
+
+    /**
+     * 获取内容检索器
+     * @param kbId
+     * @return
+     */
+    @Override
+    public ContentRetriever getContentRetriever(Long kbId,Long userId){
+        return knowledgeBaseDomainService.getContentRetriever(kbId,userId);
     }
 
     /**
@@ -132,12 +144,13 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         Long kbId = knowledgeAddDocumentRequest.getKbId();
         ThrowUtils.throwIf(kbId==null, ErrorCode.PARAMS_ERROR,"缺失知识库id");
         KnowledgeBase knowledgeBaseById = knowledgeBaseDomainService.getKnowledgeBaseById(kbId);
+
         Integer docNum = knowledgeBaseById.getDocNum();
         ThrowUtils.throwIf(!knowledgeBaseById.isVisible(userId), ErrorCode.NO_AUTH_ERROR,"无此知识库的操作权限");
         return transactionTemplate.execute(status -> {
             FileUpload fileUpload = null;
             try {
-                fileUpload = fileUploadApplicationService.uploadDocumentFile(multipartFile, "", request);
+                fileUpload = fileUploadApplicationService.uploadDocumentFile(multipartFile, "",kbId);
                 return knowledgeBaseDomainService.addKnowledgeDocument(
                         kbId,
                         userId,
@@ -146,9 +159,9 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
                         docNum);
             } catch (Exception e) {
                 status.setRollbackOnly();
-                // 删除已经保存的照片
+                // 删除已经保存的文档
                 if (fileUpload != null) {
-                    fileUploadApplicationService.deleteFile(loginUser.getId(), fileUpload.getFileName());
+                    fileUploadApplicationService.deleteFileForMinio(loginUser.getId(), fileUpload.getFileName());
                 }
             }
             return null;
@@ -207,6 +220,14 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         ThrowUtils.throwIf(!allowed, ErrorCode.NO_AUTH_ERROR);
         DocumentInfoDTO documentInfoDTO = knowledgeBaseDomainService.getDocumentInfo(document,current,pageSize);
         return documentInfoDTO.toVO();
+    }
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteDocument(long docId, HttpServletRequest request) {
+        Long userId  = userApplicationService.getLoginUser(request).getId();
+        KnowledgeDocument knowledgeDocument = knowledgeBaseDomainService.deleteDocument(docId,userId);
+        fileUploadApplicationService.deleteFileUpload(knowledgeDocument.getKbId(),knowledgeDocument.getFileId());
+        return true;
     }
 
     private QueryWrapper<KnowledgeBase> getQueryKnowledgeBaseWrapper(KnowledgeBaseQueryRequest knowledgeBase) {
