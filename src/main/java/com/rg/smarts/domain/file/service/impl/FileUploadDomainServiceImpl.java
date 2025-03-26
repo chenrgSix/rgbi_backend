@@ -50,27 +50,28 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
     }
 
     @Override
-    public void deleteFile(Long userId,String fileName) {
+    public void deleteFileForMinio(Long userId, String fileName) {
         String filepath = String.format("%s/%s", userId, fileName);
         minioUtil.remove(filepath);
     }
+
     /**
      * 文件上传
      * @param multipartFile
-     * @param userId
+     * @param pathId
      * @return 地址
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public FileUpload uploadFile(MultipartFile multipartFile,
-                             Long userId, String bucketName,String desc) {
+                             Long pathId, String bucketName,String desc) {
         // TODO 判断是否上传过已有的相同文件
         // 文件目录：根据业务、用户来划分
         String displayFileName = multipartFile.getOriginalFilename();
         String type = FileNameUtil.getSuffix(displayFileName);
         String uuid = RandomStringUtils.randomAlphanumeric(10);
         String filename = String.format("%s.%s",uuid, type);
-        String filepath = String.format("%s/%s", userId, filename);
+        String filepath = String.format("%s/%s", pathId, filename);
         File file = null;
         try {
             // 上传文件
@@ -83,7 +84,7 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
             // 填充属性
             long fileSize = FileUtil.size(file);
             FileUpload fileUpload = new FileUpload();
-            fileUpload.setUserId(userId);
+            fileUpload.setUserId(pathId);
             fileUpload.setFileName(filename);
             fileUpload.setDisplayName(displayFileName);
             fileUpload.setFileSuffix(type);
@@ -144,5 +145,10 @@ public class FileUploadDomainServiceImpl implements FileUploadDomainService {
         if (!Arrays.asList("jpeg", "jpg", "svg", "png", "webp").contains(fileSuffix)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件类型错误");
         }
+    }
+
+    @Override
+    public void deleteFileUpload(Long fileId) {
+        fileUploadRepository.removeById(fileId);
     }
 }

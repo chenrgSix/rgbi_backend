@@ -38,11 +38,10 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
 
     @Override
     public FileUpload uploadDocumentFile(MultipartFile multipartFile,
-                                     String desc,
-                                     HttpServletRequest request) {
-        User loginUser = userApplicationService.getLoginUser(request);
+                                        String desc,
+                                        Long kbId) {
         fileUploadDomainService.validDocumentFile(multipartFile);
-        return fileUploadDomainService.uploadFile(multipartFile, loginUser.getId(), FileConstant.DOC_BUCKET_NAME, desc);
+        return fileUploadDomainService.uploadFile(multipartFile, kbId, FileConstant.DOC_BUCKET_NAME, desc);
     }
     @Override
     public String  getFilePathById(Long id) {
@@ -55,7 +54,14 @@ public class FileUploadApplicationServiceImpl implements FileUploadApplicationSe
         return fileUploadDomainService.getFileById(id);
     }
     @Override
-    public void deleteFile(Long userId, String fileName) {
-        fileUploadDomainService.deleteFile(userId, fileName);
+    public void deleteFileForMinio(Long userId, String fileName) {
+        fileUploadDomainService.deleteFileForMinio(userId, fileName);
+    }
+
+    @Override
+    public void deleteFileUpload(Long kbId, Long fileId) {
+        FileUpload fileUpload = fileUploadDomainService.getFileById(fileId);
+        fileUploadDomainService.deleteFileForMinio(kbId, fileUpload.getFileName());
+        fileUploadDomainService.deleteFileUpload(fileId);
     }
 }

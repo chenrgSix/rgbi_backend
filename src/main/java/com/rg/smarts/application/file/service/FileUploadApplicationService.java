@@ -18,9 +18,10 @@ public interface FileUploadApplicationService{
 
     FileUpload uploadDocumentFile(MultipartFile multipartFile,
                                   String desc,
-                                  HttpServletRequest request);
+                                  Long kbId);
 
     String  getFilePathById(Long id);
     FileUpload  getFileById(Long id);
-    void deleteFile(Long userId, String fileName);
+    void deleteFileForMinio(Long userId, String fileName);
+    void deleteFileUpload(Long kbId,Long fileId);
 }

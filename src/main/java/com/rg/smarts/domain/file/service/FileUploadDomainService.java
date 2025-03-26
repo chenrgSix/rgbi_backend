@@ -13,13 +13,15 @@ public interface FileUploadDomainService {
 
     String getFilePathById(Long id);
     FileUpload getFileById(Long id);
-    void deleteFile(Long userId, String fileName);
+    void deleteFileForMinio(Long userId, String fileName);
 
     @Transactional(rollbackFor = Exception.class)
     FileUpload uploadFile(MultipartFile multipartFile,
-                          Long userId, String bucketName, String desc);
+                          Long pathId, String bucketName, String desc);
 
     void validDocumentFile(MultipartFile multipartFile);
 
     void validPictureFile(MultipartFile multipartFile);
+
+    void deleteFileUpload(Long fileId);
 }
