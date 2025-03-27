@@ -107,14 +107,25 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
     }
     @Override
     public void ragChat(SseAskParams params, ContentRetriever contentRetriever){
+        /**
+         * todo Langchain4j存在bug，使用es作为数据库查询时会出现错误'KnnQuery.k'，先使用手动检索的方案
+         */
         // 返回对话模型
-        IChatAssistant assistant = getChatAssistant(params,contentRetriever);
+//        IChatAssistant assistant = getChatAssistant(params,contentRetriever);
+        IChatAssistant assistant = getChatAssistant(params);
         baseChat(params,assistant);
     }
     private void baseChat(SseAskParams params,IChatAssistant assistant) {
         redisLimiterManager.doRateLimit("chat_" + params.getUserId());
         AssistantChatParams assistantChatParams = params.getAssistantChatParams();
-        TokenStream tokenStream = assistant.chatStream(assistantChatParams.getContext(), assistantChatParams.getMemoryId());
+        String searchResult = assistantChatParams.getSearchResult();
+        TokenStream tokenStream=null;
+        if (null == searchResult) {
+             tokenStream = assistant.chatStream(assistantChatParams.getContext(), assistantChatParams.getMemoryId());
+        }else {
+             tokenStream = assistant.chatRagStream(assistantChatParams.getContext(), assistantChatParams.getMemoryId(),searchResult);
+        }
+
         tokenStream.onNext((String token) -> {
                     try {
                         if (token != null) {

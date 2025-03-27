@@ -1,8 +1,6 @@
 package com.rg.smarts.domain.knowledge.service.impl;
 
 import co.elastic.clients.elasticsearch._types.KnnQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.knowledge.dto.DocumentChunk;
@@ -32,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -41,7 +38,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -202,7 +198,8 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
      * @param kbId
      * @return
      */
-    public List<DocumentKnn> searchDocumentChunk(String search,Long kbId) {
+    @Override
+    public List<DocumentKnn> searchDocumentChunk(String search, Long kbId) {
         if (StringUtils.isBlank(search)){
             return null;
         }

@@ -3,10 +3,13 @@ package com.rg.smarts.domain.knowledge.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
+import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeBase;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeDocument;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+
+import java.util.List;
 
 /**
  * @Author: czr
@@ -35,6 +38,8 @@ public interface KnowledgeBaseDomainService {
     Page<KnowledgeDocument> getKnowledgeDocPage(Page<KnowledgeDocument> knowledgeDocumentPage, QueryWrapper<KnowledgeDocument> queryKnowledgeDocWrapper);
 
     DocumentInfoDTO getDocumentInfo(KnowledgeDocument document,int current,int pageSize);
+
+    List<DocumentKnn> searchDocumentChunk(String search, Long kbId);
 
     KnowledgeDocument deleteDocument(Long docId, Long userId);
 }

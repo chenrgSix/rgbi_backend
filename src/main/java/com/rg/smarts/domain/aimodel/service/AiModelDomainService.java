@@ -21,6 +21,8 @@ public interface AiModelDomainService {
 
     void ragChat(SseAskParams params, ContentRetriever contentRetriever);
 
+
+
     String genChart(String message, Long userId);
 
     void init();

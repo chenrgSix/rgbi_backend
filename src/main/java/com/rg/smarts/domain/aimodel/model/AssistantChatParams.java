@@ -14,4 +14,6 @@ public class AssistantChatParams {
     private Long memoryId;
     // 本次的消息内容
     private String context;
+    // es的搜索结果
+    private String searchResult;
 }

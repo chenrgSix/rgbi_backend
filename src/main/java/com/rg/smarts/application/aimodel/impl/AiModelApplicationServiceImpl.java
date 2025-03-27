@@ -3,6 +3,7 @@ package com.rg.smarts.application.aimodel.impl;
 import cn.hutool.core.util.StrUtil;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
 import com.rg.smarts.application.aimodel.DialoguesApplicationService;
+import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.aimodel.constant.LlmConstant;
@@ -95,6 +96,8 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
             return;
         }
         Long userId = userApplicationService.getLoginUser(request).getId();
+        List<DocumentKnn> documentKnns = knowledgeBaseApplicationService.searchDocumentChunk(userId, kbId, chatRequest.getContent());
+        sseAskParams.getAssistantChatParams().setSearchResult(documentKnns.toString());
         ragChatStream(kbId,userId,sseAskParams);
     }
 

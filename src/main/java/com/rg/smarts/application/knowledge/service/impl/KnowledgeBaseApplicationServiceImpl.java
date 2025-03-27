@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.file.service.FileUploadApplicationService;
 import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
+import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.file.entity.FileUpload;
@@ -230,6 +231,20 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         return true;
     }
 
+    /**
+     * 返回向量查询的结果
+     * @param userId
+     * @param kbId
+     * @param search
+     * @return
+     */
+    @Override
+    public List<DocumentKnn> searchDocumentChunk(Long userId, Long kbId, String search){
+        Boolean verifyResult = knowledgeBaseDomainService.verifyIdentity(kbId, userId);
+        ThrowUtils.throwIf(!verifyResult, ErrorCode.NO_AUTH_ERROR);
+        List<DocumentKnn> documentKnns = knowledgeBaseDomainService.searchDocumentChunk(search, kbId);
+        return documentKnns;
+    }
     private QueryWrapper<KnowledgeBase> getQueryKnowledgeBaseWrapper(KnowledgeBaseQueryRequest knowledgeBase) {
         ThrowUtils.throwIf(knowledgeBase == null,ErrorCode.PARAMS_ERROR);
         String sortField = knowledgeBase.getSortField();

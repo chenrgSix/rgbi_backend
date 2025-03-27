@@ -1,6 +1,7 @@
 package com.rg.smarts.application.knowledge.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
@@ -11,6 +12,8 @@ import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @Author: czr
@@ -38,4 +41,6 @@ public interface KnowledgeBaseApplicationService {
     DocumentInfoVO getDocumentInfo(KnowledgeDocumentQueryRequest knowledgeDocumentQueryRequest, HttpServletRequest request);
 
     Boolean deleteDocument(long docId, HttpServletRequest request);
+
+    List<DocumentKnn> searchDocumentChunk(Long userId, Long kbId, String search);
 }
