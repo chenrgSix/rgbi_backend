@@ -9,7 +9,7 @@ public interface EmbeddingConstant {
     /**
      * 默认文档分割长度
      */
-    int DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS = 1024;
+    int DOCUMENT_MAX_SEGMENT_SIZE_IN_TOKENS = 512;
     // 默认的文档返回最大条数
     int DOCUMENT_MAX_RESPONSE_SIZE = 5;
     double DOCUMENT_MIN_RESPONSE_SCORE = 0.8;

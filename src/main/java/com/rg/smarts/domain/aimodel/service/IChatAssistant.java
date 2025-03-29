@@ -37,6 +37,6 @@ public interface IChatAssistant {
     String chat(@UserMessage String content,@MemoryId Long memoryId);
 
     TokenStream chatStream(@UserMessage String content,@MemoryId Long memoryId);
-    @SystemMessage("根据以下检索结果，整理回复用户问题, {{search}}")
+    @SystemMessage("根据用户的问题将数据整合成最符合的问题接口，数据一定是要从以下数据获取的：{{search}}")
     TokenStream chatRagStream(@UserMessage String content,@MemoryId Long memoryId,@V("search") String searchResult);
 }

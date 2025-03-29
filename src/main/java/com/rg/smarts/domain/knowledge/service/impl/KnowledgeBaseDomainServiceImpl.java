@@ -40,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MAX_RESPONSE_SIZE;
+
 /**
  * @Author: czr
  * @CreateTime: 2025-03-16
@@ -87,6 +89,7 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         String docType = knowledgeDocument.getDocType();
         Long id = knowledgeDocument.getId();
         Long kbId = knowledgeDocument.getKbId();
+
         Document result = null;
         KnowledgeDocument updateDoc = new KnowledgeDocument();;
         try{
@@ -213,7 +216,7 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         FetchSourceFilter sourceFilter = new FetchSourceFilter(filter, null);
         // 将FetchSourceFilter添加到查询中
         Query query = NativeQuery.builder().withKnnQuery(KnnQuery.of(f -> f.field("vector")
-                .k(5)
+                .k(DOCUMENT_MAX_RESPONSE_SIZE)
                 .numCandidates(100)
                 .queryVector(vectorAsList)
         )).withQuery(new CriteriaQuery(criteria)).withMinScore(0.85f).build();
