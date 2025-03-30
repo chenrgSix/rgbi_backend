@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -75,17 +76,21 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     }
     @Override
     public List<LLMModelVo> getSupportLLMModel() {
-        return LLMContext.getAllServices().values().stream().map(item -> {
-            AiModel aiModel = item.getAiModel();
-            LLMModelVo modelInfo = new LLMModelVo();
-            modelInfo.setModelId(aiModel.getId());
-            modelInfo.setModelName(aiModel.getName());
-            modelInfo.setModelPlatform(aiModel.getPlatform());
-            modelInfo.setIsEnable(aiModel.getIsEnable());
-            modelInfo.setIsFree(aiModel.getIsFree());
-            return modelInfo;
-        }).toList();
-    }
+        return LLMContext.getAllServices().values()
+                .stream()
+                .map(item -> {
+                    AiModel aiModel = item.getAiModel();
+                    LLMModelVo modelInfo = new LLMModelVo();
+                    modelInfo.setModelId(aiModel.getId());
+                    modelInfo.setModelName(aiModel.getName());
+                    modelInfo.setModelPlatform(aiModel.getPlatform());
+                    modelInfo.setIsEnable(aiModel.getIsEnable());
+                    modelInfo.setIsFree(aiModel.getIsFree());
+                    return modelInfo;
+                })
+                .sorted(Comparator.comparingInt(item -> (item.getIsFree() == 1 && item.getIsEnable() == 1) ? 0 : 1))
+                .toList();
+        }
     @Transactional
     @Override
     public void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {

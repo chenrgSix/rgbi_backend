@@ -55,6 +55,7 @@ CREATE TABLE dialogues(
      userId bigint(20) NOT NULL comment '用户id',  -- 用户id
      chatContent text NULL comment '聊天内容',  -- 聊天内容
      chatTitle varchar(128) NOT NULL comment '聊天主题', -- 聊天主题
+     kbIds JSON NULL comment '知识库id集合', -- 知识库id集合
      createTime  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
      updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
      isDelete    tinyint  default 0                 not null comment '是否删除'

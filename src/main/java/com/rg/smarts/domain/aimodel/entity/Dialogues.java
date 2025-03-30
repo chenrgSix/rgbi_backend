@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
+import com.rg.smarts.infrastructure.mapper.handler.JsonTypeHandler;
 import lombok.Data;
 
 /**
@@ -34,6 +37,8 @@ public class Dialogues implements Serializable {
      */
     private String chatTitle;
 
+
+
     /**
      * 创建时间
      */
@@ -49,6 +54,10 @@ public class Dialogues implements Serializable {
      */
     @TableLogic
     private Integer isDelete;
+
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List<Long> kbIds;
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
