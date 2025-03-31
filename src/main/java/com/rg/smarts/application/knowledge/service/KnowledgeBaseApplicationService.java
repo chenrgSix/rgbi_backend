@@ -42,5 +42,5 @@ public interface KnowledgeBaseApplicationService {
 
     Boolean deleteDocument(long docId, HttpServletRequest request);
 
-    List<DocumentKnn> searchDocumentChunk(Long userId, Long kbId, String search);
+    List<DocumentKnn> searchDocumentChunk(Long userId, List<Long> kbIds, String search);
 }

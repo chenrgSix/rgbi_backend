@@ -106,12 +106,11 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
         baseChat(params,assistant);
     }
     @Override
-    public void ragChat(SseAskParams params, ContentRetriever contentRetriever){
+    public void ragChat(SseAskParams params){
         /**
-         * todo Langchain4j存在bug，使用es作为数据库查询时会出现错误'KnnQuery.k'，先使用手动检索的方案
+         *  Langchain4j的Rag个人感觉还不如自己查询
          */
         // 返回对话模型
-//        IChatAssistant assistant = getChatAssistant(params,contentRetriever);
         IChatAssistant assistant = getChatAssistant(params);
         baseChat(params,assistant);
     }

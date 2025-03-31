@@ -234,17 +234,16 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     /**
      * 返回向量查询的结果
      * @param userId
-     * @param kbId
      * @param search
      * @return
      */
     @Override
-    public List<DocumentKnn> searchDocumentChunk(Long userId, Long kbId, String search){
-        Boolean verifyResult = knowledgeBaseDomainService.verifyIdentity(kbId, userId);
+    public List<DocumentKnn> searchDocumentChunk(Long userId,List<Long> kbIds, String search){
+        Boolean verifyResult = knowledgeBaseDomainService.verifyIdentity(kbIds, userId);
         ThrowUtils.throwIf(!verifyResult, ErrorCode.NO_AUTH_ERROR);
-        List<DocumentKnn> documentKnns = knowledgeBaseDomainService.searchDocumentChunk(search, kbId);
-        return documentKnns;
+        return knowledgeBaseDomainService.searchDocumentChunk(search, kbIds);
     }
+
     private QueryWrapper<KnowledgeBase> getQueryKnowledgeBaseWrapper(KnowledgeBaseQueryRequest knowledgeBase) {
         ThrowUtils.throwIf(knowledgeBase == null,ErrorCode.PARAMS_ERROR);
         String sortField = knowledgeBase.getSortField();

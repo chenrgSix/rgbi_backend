@@ -39,6 +39,10 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
 
     @Override
     public void updateMessages(Object memoryId, List<ChatMessage> messages) {
+        /**
+         *   自己实现RAG如果将SystemMessage去掉会导致手动拼凑的RAG检索消息会在上下文中丢失
+         *   langchain4j提供的RAG直接拼接在用户信息上，需要手动进行字符串裁剪，所以我选择的自己实现
+         */
         if (messages.size() > 0 && messages.get(0) instanceof AiMessage) {
             messages.remove(0);
         }
@@ -53,9 +57,6 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
                 STORE_CACHE_TIME
         );
         String json = messagesToJson(usefulData);
-        // todo 将SystemMessage去掉会导致手动拼凑的RAG检索消息会在上下文中丢失
-        // todo 验证使用langchain4j提供的RAG是否也会将检索内容存储
-//        String json = messagesToJson(messages);
         System.out.println("====================="+messages);
         Dialogues dialogues = new Dialogues();
         dialogues.setId((Long) memoryId);

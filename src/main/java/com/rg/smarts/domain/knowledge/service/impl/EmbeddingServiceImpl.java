@@ -51,7 +51,7 @@ public class EmbeddingServiceImpl implements EmbeddingService {
                 .embeddingStore(embeddingStore)
                 .embeddingModel(embeddingModel)
                 .maxResults(DOCUMENT_MAX_RESPONSE_SIZE)
-                .minScore(DOCUMENT_MIN_RESPONSE_SCORE)
+                .minScore(DOCUMENT_MIN_RESPONSE_SCORE_DOUBLE)
                 .filter(filter)
                 .build();
     }

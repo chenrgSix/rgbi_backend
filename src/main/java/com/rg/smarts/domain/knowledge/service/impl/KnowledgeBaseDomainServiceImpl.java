@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MAX_RESPONSE_SIZE;
+import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MIN_RESPONSE_SCORE;
 
 /**
  * @Author: czr
@@ -136,6 +137,18 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         return knowledgeBaseById.isVisible(userId);
     }
     @Override
+    public Boolean verifyIdentity(List<Long> kbIds, Long userId){
+        List<KnowledgeBase> knowledgeBases = knowledgeBaseRepository.listByIds(kbIds);
+        ThrowUtils.throwIf(knowledgeBases==null,ErrorCode.NOT_FOUND_ERROR,"知识库不存在");
+        for (KnowledgeBase knowledgeBase: knowledgeBases) {
+            boolean visible = knowledgeBase.isVisible(userId);
+            if (!visible) {
+                return false;
+            }
+        }
+        return true;
+    }
+    @Override
     public Boolean addKnowledgeBase(KnowledgeBase knowledgeBase) {
         return knowledgeBaseRepository.save(knowledgeBase);
     }
@@ -203,14 +216,24 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
      */
     @Override
     public List<DocumentKnn> searchDocumentChunk(String search, Long kbId) {
+        // 构建Term查询
+        Criteria criteria = new Criteria(EmbeddingConstant.KB_INDEX).is(kbId);
+        return searchDocumentChunk(criteria, search);
+    }
+    @Override
+    public List<DocumentKnn> searchDocumentChunk(String search, List<Long> kbIds) {
+        // 构建Term查询
+        Criteria criteria = new Criteria(EmbeddingConstant.KB_INDEX).in(kbIds);
+        return searchDocumentChunk(criteria, search);
+    }
+
+    private List<DocumentKnn> searchDocumentChunk(Criteria criteria,String search) {
         if (StringUtils.isBlank(search)){
             return null;
         }
         Embedding vectorBySearch = embeddingService.getVectorBySearch(search);
         List<Float> vectorAsList = vectorBySearch.vectorAsList();
         // 构建Term查询
-        Criteria criteria = new Criteria("metadata.kb_id")
-                .is(kbId);
         // 指定返回的字段
         String[] filter = {"text"};
         FetchSourceFilter sourceFilter = new FetchSourceFilter(filter, null);
@@ -219,7 +242,7 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
                 .k(DOCUMENT_MAX_RESPONSE_SIZE)
                 .numCandidates(100)
                 .queryVector(vectorAsList)
-        )).withQuery(new CriteriaQuery(criteria)).withMinScore(0.85f).build();
+        )).withQuery(new CriteriaQuery(criteria)).withMinScore(DOCUMENT_MIN_RESPONSE_SCORE).build();
 
         query.addSourceFilter(sourceFilter);
         SearchHits<DocumentKnn> searchPage = elasticsearchOperations

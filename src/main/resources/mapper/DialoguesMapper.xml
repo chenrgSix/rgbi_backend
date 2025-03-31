@@ -4,20 +4,4 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rg.smarts.infrastructure.mapper.DialoguesMapper">
 
-    <resultMap id="BaseResultMap" type="com.rg.smarts.domain.aimodel.entity.Dialogues">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="chatContent" column="chatContent" jdbcType="VARCHAR"/>
-            <result property="chatTitle" column="chatTitle" jdbcType="VARCHAR"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
-            <result property="kbIds" column="kbIds" jdbcType="OTHER"/>
-    </resultMap>
-
-    <sql id="Base_Column_List">
-        id,userId,chatContent,
-        chatTitle,createTime,updateTime,
-        isDelete,kbIds
-    </sql>
 </mapper>

@@ -25,16 +25,19 @@ public class Dialogues implements Serializable {
     /**
      * 
      */
+    @TableField("userId")
     private Long userId;
 
     /**
      * 
      */
+    @TableField("chatContent")
     private String chatContent;
 
     /**
      * 
      */
+    @TableField("chatTitle")
     private String chatTitle;
 
 
@@ -42,20 +45,23 @@ public class Dialogues implements Serializable {
     /**
      * 创建时间
      */
+    @TableField("createTime")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @TableField("updateTime")
     private Date updateTime;
 
     /**
      * 是否删除
      */
     @TableLogic
+    @TableField("isDelete")
     private Integer isDelete;
 
-    @TableField(typeHandler = JsonTypeHandler.class)
+    @TableField(value = "kbIds", typeHandler = JsonTypeHandler.class)
     private List<Long> kbIds;
 
 

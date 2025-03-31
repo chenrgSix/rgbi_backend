@@ -95,20 +95,20 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     @Override
     public void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
         SseAskParams sseAskParams = getSseAskParams(chatRequest, sseEmitter, request);
-        Long kbId = chatRequest.getKbId();
-        if (kbId==null){
+        List<Long> kbIds = chatRequest.getKbId();
+        if (kbIds==null|| kbIds.isEmpty()) {
             aiModelDomainService.commonChat(sseAskParams);
             return;
         }
         Long userId = userApplicationService.getLoginUser(request).getId();
-        List<DocumentKnn> documentKnns = knowledgeBaseApplicationService.searchDocumentChunk(userId, kbId, chatRequest.getContent());
+        List<DocumentKnn> documentKnns = knowledgeBaseApplicationService.searchDocumentChunk(userId, kbIds, chatRequest.getContent());
+//        List<DocumentKnn> documentKnns = knowledgeBaseApplicationService.searchDocumentChunk(userId, kbId, chatRequest.getContent());
         sseAskParams.getAssistantChatParams().setSearchResult(documentKnns.toString());
-        ragChatStream(kbId,userId,sseAskParams);
+        ragChatStream(sseAskParams);
     }
 
-    private void ragChatStream(Long kbId, Long userId,SseAskParams sseAskParams) {
-        ContentRetriever contentRetriever = knowledgeBaseApplicationService.getContentRetriever(kbId,userId);
-        aiModelDomainService.ragChat(sseAskParams,contentRetriever);
+    private void ragChatStream(SseAskParams sseAskParams) {
+        aiModelDomainService.ragChat(sseAskParams);
     }
     protected SseAskParams getSseAskParams(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
         User loginUser = userApplicationService.getLoginUser(request);

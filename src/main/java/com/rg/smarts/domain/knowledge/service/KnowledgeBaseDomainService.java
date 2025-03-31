@@ -28,6 +28,8 @@ public interface KnowledgeBaseDomainService {
 
     Boolean verifyIdentity(Long kb_id, Long userId);
 
+    Boolean verifyIdentity(List<Long> kbIds, Long userId);
+
     Boolean addKnowledgeBase(KnowledgeBase knowledgeBase);
 
     Page<KnowledgeBase> getKnowledgeBasePage(Page<KnowledgeBase> knowledgeBasePage, QueryWrapper<KnowledgeBase> queryWrapper);
@@ -40,6 +42,8 @@ public interface KnowledgeBaseDomainService {
     DocumentInfoDTO getDocumentInfo(KnowledgeDocument document,int current,int pageSize);
 
     List<DocumentKnn> searchDocumentChunk(String search, Long kbId);
+
+    List<DocumentKnn> searchDocumentChunk(String search, List<Long> kbIds);
 
     KnowledgeDocument deleteDocument(Long docId, Long userId);
 }

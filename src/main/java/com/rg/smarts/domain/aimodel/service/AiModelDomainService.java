@@ -19,7 +19,7 @@ public interface AiModelDomainService {
 
     void commonChat(SseAskParams params);
 
-    void ragChat(SseAskParams params, ContentRetriever contentRetriever);
+    void ragChat(SseAskParams params);
 
 
 
