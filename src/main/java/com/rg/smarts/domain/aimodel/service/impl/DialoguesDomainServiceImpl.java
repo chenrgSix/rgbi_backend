@@ -11,6 +11,8 @@ import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author czr
  * @description 聊天会话的服务实现类
@@ -22,21 +24,25 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
     private DialoguesRepository dialoguesRepository;
 
     @Override
-    public Long getMemoryIdOrAdd(String content, Long userId, Long memoryId) {
+    public Long getMemoryIdOrAdd(String content, Long userId, Long memoryId, List<Long> kbIds) {
         // 获取会话id，没有的话就生成
         if (memoryId == null) {
-            return addDialoguesByUserId(content, userId);
+            return addDialoguesByUserId(content, userId,kbIds);
         }
         LambdaQueryWrapper<Dialogues> dialoguesLambdaQueryWrapper = new LambdaQueryWrapper<>();
         dialoguesLambdaQueryWrapper.eq(Dialogues::getId, memoryId);
         dialoguesLambdaQueryWrapper.eq(Dialogues::getUserId, userId);
         Dialogues dialogues = dialoguesRepository.getOne(dialoguesLambdaQueryWrapper);
         ThrowUtils.throwIf(dialogues==null, ErrorCode.PARAMS_ERROR, "对话不存在");
+        if (!dialogues.getKbIds().equals(kbIds)) {
+            dialogues.setKbIds(kbIds);
+            dialoguesRepository.updateById(dialogues);
+        }
         return memoryId;
     }
 
     @Override
-    public Long addDialoguesByUserId(String chatContent, Long userId) {
+    public Long addDialoguesByUserId(String chatContent, Long userId, List<Long> kbIds) {
         // 确保字符串长度大于或等于10
         if (chatContent.length() >= 10) {
             // 截取前十个字符
@@ -45,6 +51,7 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
         Dialogues dialogues = new Dialogues();
         dialogues.setChatTitle(chatContent);
         dialogues.setUserId(userId);
+        dialogues.setKbIds(kbIds);
         boolean saveResult = dialoguesRepository.save(dialogues);
         if (!saveResult) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息创建失败，数据库错误");

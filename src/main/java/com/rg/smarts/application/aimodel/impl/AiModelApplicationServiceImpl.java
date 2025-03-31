@@ -20,7 +20,6 @@ import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
 import com.rg.smarts.interfaces.vo.ai.AiModelVO;
 import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -95,8 +94,8 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     @Override
     public void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request) {
         SseAskParams sseAskParams = getSseAskParams(chatRequest, sseEmitter, request);
-        List<Long> kbIds = chatRequest.getKbId();
-        if (kbIds==null|| kbIds.isEmpty()) {
+        List<Long> kbIds = chatRequest.getKbIds();
+        if (kbIds==null || kbIds.isEmpty()) {
             aiModelDomainService.commonChat(sseAskParams);
             return;
         }
@@ -126,7 +125,8 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
         Long validMemoryId = dialoguesApplicationService.getMemoryIdOrAdd(
                 chatRequest.getContent(),
                 loginUser.getId(),
-                chatRequest.getMemoryId());
+                chatRequest.getMemoryId(),
+                chatRequest.getKbIds());
         AssistantChatParams assistantChatParams = new AssistantChatParams();
         assistantChatParams.setMemoryId(validMemoryId);
         assistantChatParams.setContext(chatRequest.getContent());

@@ -7,6 +7,8 @@ import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialoguesVO;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 /**
  * @Author: czr
  * @CreateTime: 2025-03-01
@@ -18,7 +20,7 @@ public interface DialoguesApplicationService {
 
     DialoguesVO getDialogueById(Long memoryId, HttpServletRequest request);
 
-    Long getMemoryIdOrAdd(String content, Long id, Long memoryId);
+    Long getMemoryIdOrAdd(String content, Long id, Long memoryId, List<Long> kbIds);
 
     Boolean deleteDialogueById(DeleteRequest deleteRequest, HttpServletRequest request);
 }

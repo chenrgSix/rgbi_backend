@@ -64,8 +64,8 @@ public class DialoguesApplicationServiceImpl implements DialoguesApplicationServ
     }
 
     @Override
-    public Long getMemoryIdOrAdd(String content, Long id, Long memoryId) {
-        return dialoguesDomainService.getMemoryIdOrAdd(content, id, memoryId);
+    public Long getMemoryIdOrAdd(String content, Long id, Long memoryId,List<Long> kbIds) {
+        return dialoguesDomainService.getMemoryIdOrAdd(content, id, memoryId,kbIds);
     }
 
     @Override

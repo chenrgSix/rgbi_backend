@@ -15,6 +15,6 @@ public class ChatRequest {
     private String modelName;
     private Long memoryId;
     @Null
-    private List<Long> kbId;
+    private List<Long> kbIds;
     private String content;
 }
