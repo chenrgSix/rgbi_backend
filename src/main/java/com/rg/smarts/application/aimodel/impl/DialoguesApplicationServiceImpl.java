@@ -2,6 +2,7 @@ package com.rg.smarts.application.aimodel.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.aimodel.DialoguesApplicationService;
+import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationService;
 import com.rg.smarts.application.user.UserApplicationService;
 import com.rg.smarts.domain.aimodel.entity.Dialogues;
 import com.rg.smarts.domain.aimodel.service.DialoguesDomainService;
@@ -10,12 +11,14 @@ import com.rg.smarts.infrastructure.common.DeleteRequest;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
 import com.rg.smarts.interfaces.dto.dialogues.DialoguesQueryRequest;
+import com.rg.smarts.interfaces.vo.KBSimpleVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialogueSummaryVO;
 import com.rg.smarts.interfaces.vo.dialogues.DialoguesVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,11 +31,13 @@ import java.util.Objects;
  */
 @Service
 public class DialoguesApplicationServiceImpl implements DialoguesApplicationService {
-    @Autowired
+    @Resource
     public DialoguesDomainService dialoguesDomainService;
     @Resource
     private UserApplicationService userApplicationService;
-
+    @Lazy
+    @Resource
+    public KnowledgeBaseApplicationService knowledgeBaseApplicationService;
 
     @Override
     public Page<DialogueSummaryVO> getBatchOfChatList(DialoguesQueryRequest dialoguesQueryRequest,HttpServletRequest request) {
@@ -60,6 +65,8 @@ public class DialoguesApplicationServiceImpl implements DialoguesApplicationServ
         ThrowUtils.throwIf(!Objects.equals(dialogues.getUserId(), loginUser.getId()), ErrorCode.OPERATION_ERROR, "您并无该对话内容");
         DialoguesVO dialoguesVO = new DialoguesVO();
         BeanUtils.copyProperties(dialogues, dialoguesVO);
+        List<KBSimpleVO> kbSimples=knowledgeBaseApplicationService.getKbSimples(dialogues.getKbIds());
+        dialoguesVO.setKbSimples(kbSimples);
         return dialoguesVO;
     }
 

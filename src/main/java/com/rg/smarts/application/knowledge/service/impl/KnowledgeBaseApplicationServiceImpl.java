@@ -23,6 +23,7 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.KBSimpleVO;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
@@ -54,6 +55,12 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     private FileUploadApplicationService fileUploadApplicationService;
     @Resource
     private TransactionTemplate transactionTemplate;
+    @Override
+    public List<KnowledgeBaseVO> getSelectableKnowledgeBaseByUserId(HttpServletRequest request) {
+        User loginUser = userApplicationService.getLoginUser(request);
+        List<KnowledgeBase> knowledgeBaseList = knowledgeBaseDomainService.getSelectableKnowledgeBaseByUserId(loginUser.getId());
+        return knowledgeBaseToKnowledgeBaseVO(knowledgeBaseList);
+    }
 
     @Override
     public Boolean addKnowledgeBase(KnowledgeBaseAddRequest knowledgeBaseAddRequest, HttpServletRequest request) {
@@ -98,11 +105,7 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         });
         Page<KnowledgeBase> knowledgeBasePage = knowledgeBaseDomainService.getKnowledgeBasePage(new Page<>(current, size),queryWrapper);
         List<KnowledgeBase> records = knowledgeBasePage.getRecords();
-        List<KnowledgeBaseVO> knowledgeBaseVOList = records.stream().map(knowledgeBase -> {
-            KnowledgeBaseVO knowledgeBaseVO = new KnowledgeBaseVO();
-            BeanUtils.copyProperties(knowledgeBase, knowledgeBaseVO);
-            return knowledgeBaseVO;
-        }).toList();
+        List<KnowledgeBaseVO> knowledgeBaseVOList = knowledgeBaseToKnowledgeBaseVO(records);
         Page<KnowledgeBaseVO> knowledgeBaseVOPage = new Page<>(current, size, knowledgeBasePage.getTotal());
         knowledgeBaseVOPage.setRecords(knowledgeBaseVOList);
         return knowledgeBaseVOPage;
@@ -126,10 +129,6 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     }
 
 
-    @Override
-    public KnowledgeBaseVO getKnowledgeDocumentById(Long id, HttpServletRequest request) {
-        return null;
-    }
 
     /**
      * 添加知识库文档
@@ -244,6 +243,14 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
         return knowledgeBaseDomainService.searchDocumentChunk(search, kbIds);
     }
 
+    @Override
+    public List<KBSimpleVO> getKbSimples(List<Long> kbIds) {
+        if (kbIds==null || kbIds.isEmpty()) {
+            return null;
+        }
+        return knowledgeBaseDomainService.getKbSimples(kbIds);
+    }
+
     private QueryWrapper<KnowledgeBase> getQueryKnowledgeBaseWrapper(KnowledgeBaseQueryRequest knowledgeBase) {
         ThrowUtils.throwIf(knowledgeBase == null,ErrorCode.PARAMS_ERROR);
         String sortField = knowledgeBase.getSortField();
@@ -281,5 +288,13 @@ public class KnowledgeBaseApplicationServiceImpl implements KnowledgeBaseApplica
     private Boolean isAllowed(Long kb_id,HttpServletRequest request){
         Long userId  = userApplicationService.getLoginUser(request).getId();
         return knowledgeBaseDomainService.verifyIdentity(kb_id,userId);
+    }
+
+    private List<KnowledgeBaseVO> knowledgeBaseToKnowledgeBaseVO(List<KnowledgeBase> knowledgeBases){
+        return knowledgeBases.stream().map(knowledgeBase -> {
+            KnowledgeBaseVO knowledgeBaseVO = new KnowledgeBaseVO();
+            BeanUtils.copyProperties(knowledgeBase, knowledgeBaseVO);
+            return knowledgeBaseVO;
+        }).toList();
     }
 }

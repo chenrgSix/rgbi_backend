@@ -6,6 +6,7 @@ import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
+import com.rg.smarts.interfaces.vo.KBSimpleVO;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
@@ -21,6 +22,8 @@ import java.util.List;
  * @Description: 知识库操作的domain层
  */
 public interface KnowledgeBaseApplicationService {
+    List<KnowledgeBaseVO> getSelectableKnowledgeBaseByUserId(HttpServletRequest request);
+
     Boolean addKnowledgeBase(KnowledgeBaseAddRequest knowledgeBaseAddRequest, HttpServletRequest request);
 
     ContentRetriever getContentRetriever(Long kbId,Long userId);
@@ -28,8 +31,6 @@ public interface KnowledgeBaseApplicationService {
     Page<KnowledgeBaseVO> listKnowledgeBaseByPage(KnowledgeBaseQueryRequest knowledgeBaseQueryRequest, HttpServletRequest request);
 
     KnowledgeBaseVO getKnowledgeBaseById(Long id, HttpServletRequest request);
-
-    KnowledgeBaseVO getKnowledgeDocumentById(Long id, HttpServletRequest request);
 
     Boolean addDocument(MultipartFile multipartFile, KnowledgeAddDocumentRequest knowledgeAddDocumentRequest, HttpServletRequest request);
 
@@ -43,4 +44,6 @@ public interface KnowledgeBaseApplicationService {
     Boolean deleteDocument(long docId, HttpServletRequest request);
 
     List<DocumentKnn> searchDocumentChunk(Long userId, List<Long> kbIds, String search);
+
+    List<KBSimpleVO> getKbSimples(List<Long> kbIds);
 }

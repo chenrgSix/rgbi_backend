@@ -5,12 +5,10 @@ import com.rg.smarts.application.knowledge.service.KnowledgeBaseApplicationServi
 import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ResultUtils;
-import com.rg.smarts.interfaces.dto.chart.GenChartByAiRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeAddDocumentRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseAddRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeBaseQueryRequest;
 import com.rg.smarts.interfaces.dto.knowledge.KnowledgeDocumentQueryRequest;
-import com.rg.smarts.interfaces.vo.BiResponse;
 import com.rg.smarts.interfaces.vo.knowledge.DocumentInfoVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeBaseVO;
 import com.rg.smarts.interfaces.vo.knowledge.KnowledgeDocumentVO;
@@ -19,6 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @Author: czr
@@ -56,7 +56,11 @@ public class KnowledgeBaseController {
         KnowledgeBaseVO result = knowledgeBaseApplicationService.getKnowledgeBaseById(id,request);
         return ResultUtils.success(result);
     }
-
+    @GetMapping(value = "/get/selectable")
+    public BaseResponse<List<KnowledgeBaseVO>> getSelectableKnowledgeBaseByUserId( HttpServletRequest request) {
+        List<KnowledgeBaseVO> selectableKnowledgeBaseByUserId = knowledgeBaseApplicationService.getSelectableKnowledgeBaseByUserId(request);
+        return ResultUtils.success(selectableKnowledgeBaseByUserId);
+    }
     /**
      * todo 补充知识库删除
      */

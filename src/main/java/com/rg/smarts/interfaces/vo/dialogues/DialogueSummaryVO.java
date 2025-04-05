@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 对话响应
@@ -15,6 +16,10 @@ public class DialogueSummaryVO implements Serializable {
      * memoryId
      */
     private Long id;
+    /**
+     * 消息主题
+     */
+    private List<Long> kbIds;
 
 
     /**

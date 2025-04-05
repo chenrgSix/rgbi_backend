@@ -13,7 +13,7 @@ import lombok.Data;
  * 对话表
  * @TableName dialogues
  */
-@TableName(value ="dialogues")
+@TableName(value ="dialogues",autoResultMap = true)
 @Data
 public class Dialogues implements Serializable {
     /**

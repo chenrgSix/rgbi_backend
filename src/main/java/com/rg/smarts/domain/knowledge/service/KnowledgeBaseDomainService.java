@@ -6,6 +6,7 @@ import com.rg.smarts.application.knowledge.dto.DocumentInfoDTO;
 import com.rg.smarts.application.knowledge.dto.DocumentKnn;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeBase;
 import com.rg.smarts.domain.knowledge.entity.KnowledgeDocument;
+import com.rg.smarts.interfaces.vo.KBSimpleVO;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 
@@ -20,6 +21,12 @@ public interface KnowledgeBaseDomainService {
     Boolean addKnowledgeDocument(Long kbId, Long userId, Long fileId, String docType, Integer docNum);
 
     KnowledgeDocument getKnowledgeDocumentById(Long documentId);
+
+    List<KnowledgeBase> getPublicKnowledgeBaseAll();
+
+    List<KnowledgeBase> getKnowledgeBaseByUserId(Long userId);
+
+    List<KnowledgeBase> getSelectableKnowledgeBaseByUserId(Long userId);
 
     //    解析文档
     void loadDocument(KnowledgeDocument knowledgeDocument, String filePath);
@@ -46,4 +53,6 @@ public interface KnowledgeBaseDomainService {
     List<DocumentKnn> searchDocumentChunk(String search, List<Long> kbIds);
 
     KnowledgeDocument deleteDocument(Long docId, Long userId);
+
+    List<KBSimpleVO> getKbSimples(List<Long> kbIds);
 }

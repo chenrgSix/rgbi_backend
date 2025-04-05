@@ -48,6 +48,7 @@ public class PersistentChatMemoryStore implements ChatMemoryStore {
         }
         List<ChatMessage> usefulData = new ArrayList<>();
         for (ChatMessage chatMessage : messages) {
+            // TODO 是否保存在此引用的知识文档ID
             if (!(chatMessage instanceof SystemMessage)) {
                 usefulData.add(chatMessage);
             }

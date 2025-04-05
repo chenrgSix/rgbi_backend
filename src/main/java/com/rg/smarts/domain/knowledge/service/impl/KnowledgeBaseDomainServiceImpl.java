@@ -1,6 +1,7 @@
 package com.rg.smarts.domain.knowledge.service.impl;
 
 import co.elastic.clients.elasticsearch._types.KnnQuery;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.knowledge.dto.DocumentChunk;
@@ -14,9 +15,11 @@ import com.rg.smarts.domain.knowledge.repository.KnowledgeDocumentRepository;
 import com.rg.smarts.domain.knowledge.service.EmbeddingService;
 import com.rg.smarts.domain.knowledge.service.KnowledgeBaseDomainService;
 import com.rg.smarts.domain.knowledge.valueobject.DocumentStatusEnum;
+import com.rg.smarts.domain.knowledge.valueobject.KBStatusEnum;
 import com.rg.smarts.infrastructure.common.ErrorCode;
 import com.rg.smarts.infrastructure.exception.BusinessException;
 import com.rg.smarts.infrastructure.exception.ThrowUtils;
+import com.rg.smarts.interfaces.vo.KBSimpleVO;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.UrlDocumentLoader;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
@@ -38,7 +41,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MAX_RESPONSE_SIZE;
 import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT_MIN_RESPONSE_SCORE;
@@ -46,7 +49,7 @@ import static com.rg.smarts.domain.knowledge.constant.EmbeddingConstant.DOCUMENT
 /**
  * @Author: czr
  * @CreateTime: 2025-03-16
- * @Description:
+ * @Description: Kb==KnowledgeBase
  */
 @Slf4j
 @Service
@@ -80,6 +83,45 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
     @Override
     public KnowledgeDocument getKnowledgeDocumentById(Long documentId){
         return knowledgeDocumentRepository.getById(documentId);
+    }
+
+    /**
+     * 获取所有的公共知识库
+     * @return
+     */
+    @Override
+    public List<KnowledgeBase> getPublicKnowledgeBaseAll(){
+        //TODO 缓存
+        LambdaQueryWrapper<KnowledgeBase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(KnowledgeBase::getIsPublic, KBStatusEnum.PUBLIC.getValue());
+        List<KnowledgeBase> list = knowledgeBaseRepository.list(queryWrapper);
+        return list;
+    }
+    @Override
+    public List<KnowledgeBase> getKnowledgeBaseByUserId(Long userId){
+        //TODO 缓存
+        ThrowUtils.throwIf(userId==null, ErrorCode.OPERATION_ERROR);
+        LambdaQueryWrapper<KnowledgeBase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(KnowledgeBase::getUserId, userId);
+        List<KnowledgeBase> list = knowledgeBaseRepository.list(queryWrapper);
+        return list;
+    }
+
+    /**
+     * 获取用户可以选择的知识库
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<KnowledgeBase> getSelectableKnowledgeBaseByUserId(Long userId){
+        List<KnowledgeBase> publicKnowledgeBaseAll = getPublicKnowledgeBaseAll();
+        KnowledgeBase knowledgeBase = new KnowledgeBase();
+        knowledgeBase.setIsPublic(KBStatusEnum.PRIVATE.getValue());
+        knowledgeBase.setUserId(userId);
+        LambdaQueryWrapper<KnowledgeBase> kbLambadaQueryWrapper = getKbLambadaQueryWrapper(knowledgeBase);
+        List<KnowledgeBase> result = knowledgeBaseRepository.list(kbLambadaQueryWrapper);
+        result.addAll(publicKnowledgeBaseAll);
+        return result;
     }
 
     //    解析文档
@@ -272,5 +314,32 @@ public class KnowledgeBaseDomainServiceImpl implements KnowledgeBaseDomainServic
         elasticsearchOperations.delete(query, DocumentChunk.class);
         return knowledgeDocument;
 
+    }
+
+    @Override
+    public List<KBSimpleVO> getKbSimples(List<Long> kbIds) {
+        List<KnowledgeBase> knowledgeBases = knowledgeBaseRepository.listByIds(kbIds);
+        List<KBSimpleVO> kbSimpleVOS = knowledgeBases.stream().map(knowledgeBase -> {
+            KBSimpleVO kbSimpleVO = new KBSimpleVO();
+            kbSimpleVO.setTitle(knowledgeBase.getTitle());
+            kbSimpleVO.setId(knowledgeBase.getId());
+            return kbSimpleVO;
+        }).toList();
+        return kbSimpleVOS;
+    }
+
+    private LambdaQueryWrapper<KnowledgeBase> getKbLambadaQueryWrapper(KnowledgeBase knowledgeBase) {
+        Long id = knowledgeBase.getId();
+        Long userId = knowledgeBase.getUserId();
+        String title = knowledgeBase.getTitle();
+        String remark = knowledgeBase.getRemark();
+        Integer isPublic = knowledgeBase.getIsPublic();
+        LambdaQueryWrapper<KnowledgeBase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(knowledgeBase.getId()!=null,KnowledgeBase::getId, id);
+        queryWrapper.eq(knowledgeBase.getUserId()!=null,KnowledgeBase::getUserId, userId);
+        queryWrapper.like(StringUtils.isNotBlank(title),KnowledgeBase::getTitle, title);
+        queryWrapper.like(StringUtils.isNotBlank(remark),KnowledgeBase::getRemark, remark);
+        queryWrapper.eq(isPublic!=null,KnowledgeBase::getIsPublic, isPublic);
+        return queryWrapper;
     }
 }

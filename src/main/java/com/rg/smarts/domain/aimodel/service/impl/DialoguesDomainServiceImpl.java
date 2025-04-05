@@ -34,7 +34,7 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
         dialoguesLambdaQueryWrapper.eq(Dialogues::getUserId, userId);
         Dialogues dialogues = dialoguesRepository.getOne(dialoguesLambdaQueryWrapper);
         ThrowUtils.throwIf(dialogues==null, ErrorCode.PARAMS_ERROR, "对话不存在");
-        if (!dialogues.getKbIds().equals(kbIds)) {
+        if (!kbIds.equals(dialogues.getKbIds())) {
             dialogues.setKbIds(kbIds);
             dialoguesRepository.updateById(dialogues);
         }
@@ -67,7 +67,6 @@ public class DialoguesDomainServiceImpl implements DialoguesDomainService {
     @Override
     public Page<Dialogues> getBatchOfChatList( int current,int pageSize,Long userId) {
         LambdaQueryWrapper<Dialogues> dialoguesLambdaQueryWrapper = new LambdaQueryWrapper<>();
-
         dialoguesLambdaQueryWrapper.orderByDesc(Dialogues::getCreateTime);
         Page<Dialogues> dialoguesPage = dialoguesRepository.page(new Page<>(current, pageSize),
                 dialoguesLambdaQueryWrapper);
