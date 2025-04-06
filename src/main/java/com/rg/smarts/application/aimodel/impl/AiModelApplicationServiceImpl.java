@@ -60,9 +60,11 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     }
 
     @Override
-    public AiModel addOne(AiModelAddRequest aiModelAddRequest) {
+    public AiModel addOne(AiModelAddRequest aiModelAddRequest,HttpServletRequest request) {
+        User loginUser = userApplicationService.getLoginUser(request);
         AiModel aiModel = new AiModel();
         BeanUtils.copyProperties(aiModelAddRequest, aiModel);
+        aiModel.setUserId(loginUser.getId());
         aiModelDomainService.addOne(aiModel);
         return aiModel;
     }

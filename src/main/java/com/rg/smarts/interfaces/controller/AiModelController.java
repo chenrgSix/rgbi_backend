@@ -7,6 +7,7 @@ import com.rg.smarts.domain.user.constant.UserConstant;
 import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ResultUtils;
+import com.rg.smarts.interfaces.dto.ai.AiModelAddRequest;
 import com.rg.smarts.interfaces.dto.ai.AiModelQueryRequest;
 import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
@@ -52,6 +53,13 @@ public class AiModelController {
         Page<AiModel> aiModelPage=aiModelApplicationService.listAiModelByPage(aiModelQueryRequest);
         return ResultUtils.success(aiModelPage);
     }
+    @PostMapping(value = "/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Long> addAiModel(@RequestBody AiModelAddRequest aiModelUpdateRequest,HttpServletRequest request) {
+        AiModel aiModel = aiModelApplicationService.addOne(aiModelUpdateRequest,request);
+        return ResultUtils.success(aiModel.getId());
+    }
+
     @PostMapping(value = "/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateAiModel(@RequestBody AiModelUpdateRequest aiModelUpdateRequest) {

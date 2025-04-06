@@ -20,7 +20,7 @@ import java.util.List;
 public interface AiModelApplicationService {
 
     String genChart(String message, Long userId);
-    AiModel addOne(AiModelAddRequest aiModelAddRequest);
+    AiModel addOne(AiModelAddRequest aiModelAddRequest,HttpServletRequest request);
 
     Boolean updateAiModel(AiModelUpdateRequest aiModelUpdateRequest);
 
