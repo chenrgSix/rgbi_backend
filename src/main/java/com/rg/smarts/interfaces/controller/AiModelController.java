@@ -1,10 +1,13 @@
 package com.rg.smarts.interfaces.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
+import com.rg.smarts.domain.aimodel.entity.AiModel;
 import com.rg.smarts.domain.user.constant.UserConstant;
 import com.rg.smarts.infrastructure.annotation.AuthCheck;
 import com.rg.smarts.infrastructure.common.BaseResponse;
 import com.rg.smarts.infrastructure.common.ResultUtils;
+import com.rg.smarts.interfaces.dto.ai.AiModelQueryRequest;
 import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
 import com.rg.smarts.interfaces.vo.ai.AiModelVO;
@@ -42,6 +45,12 @@ public class AiModelController {
     public BaseResponse<List<LLMModelVo>> getSupportLLMModel() {
         List<LLMModelVo> supportLLMModel = aiModelApplicationService.getSupportLLMModel();
         return ResultUtils.success(supportLLMModel);
+    }
+    @PostMapping("/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<AiModel>> listAiModelByPage(@RequestBody AiModelQueryRequest aiModelQueryRequest) {
+        Page<AiModel> aiModelPage=aiModelApplicationService.listAiModelByPage(aiModelQueryRequest);
+        return ResultUtils.success(aiModelPage);
     }
     @PostMapping(value = "/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)

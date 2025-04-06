@@ -1,7 +1,9 @@
 package com.rg.smarts.application.aimodel;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.domain.aimodel.entity.AiModel;
 import com.rg.smarts.interfaces.dto.ai.AiModelAddRequest;
+import com.rg.smarts.interfaces.dto.ai.AiModelQueryRequest;
 import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
 import com.rg.smarts.interfaces.vo.ai.AiModelVO;
@@ -29,4 +31,6 @@ public interface AiModelApplicationService {
     void chatStream(ChatRequest chatRequest, SseEmitter sseEmitter, HttpServletRequest request);
 
     void init();
+
+    Page<AiModel> listAiModelByPage(AiModelQueryRequest aiModelQueryRequest);
 }

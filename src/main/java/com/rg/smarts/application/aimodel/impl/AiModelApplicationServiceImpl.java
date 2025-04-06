@@ -1,6 +1,8 @@
 package com.rg.smarts.application.aimodel.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.application.aimodel.AiModelApplicationService;
 import com.rg.smarts.application.aimodel.DialoguesApplicationService;
 import com.rg.smarts.application.knowledge.dto.DocumentKnn;
@@ -14,8 +16,11 @@ import com.rg.smarts.domain.aimodel.model.SseAskParams;
 import com.rg.smarts.domain.aimodel.service.AiModelDomainService;
 import com.rg.smarts.domain.user.entity.User;
 import com.rg.smarts.infrastructure.common.ErrorCode;
+import com.rg.smarts.infrastructure.constant.CommonConstant;
 import com.rg.smarts.infrastructure.exception.BusinessException;
+import com.rg.smarts.infrastructure.utils.SqlUtils;
 import com.rg.smarts.interfaces.dto.ai.AiModelAddRequest;
+import com.rg.smarts.interfaces.dto.ai.AiModelQueryRequest;
 import com.rg.smarts.interfaces.dto.ai.AiModelUpdateRequest;
 import com.rg.smarts.interfaces.dto.ai.ChatRequest;
 import com.rg.smarts.interfaces.vo.ai.AiModelVO;
@@ -23,6 +28,8 @@ import com.rg.smarts.interfaces.vo.ai.LLMModelVo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,6 +143,37 @@ public class AiModelApplicationServiceImpl implements AiModelApplicationService 
     @Override
     public void init() {
         aiModelDomainService.init();
+    }
+
+    @Override
+    public Page<AiModel> listAiModelByPage(AiModelQueryRequest aiModelQueryRequest) {
+        int current = aiModelQueryRequest.getCurrent();
+        int size = aiModelQueryRequest.getPageSize();
+        return aiModelDomainService.listAiModelByPage(new Page<>(current, size),getAiModelQueryWrapper(aiModelQueryRequest));
+    }
+
+    private QueryWrapper<AiModel> getAiModelQueryWrapper(AiModelQueryRequest aiModelQueryRequest) {
+
+        Long id = aiModelQueryRequest.getId();
+        Long userId = aiModelQueryRequest.getUserId();
+        String name = aiModelQueryRequest.getName();
+        String type = aiModelQueryRequest.getType();
+        String platform = aiModelQueryRequest.getPlatform();
+        Integer isFree = aiModelQueryRequest.getIsFree();
+        Integer isEnable = aiModelQueryRequest.getIsEnable();
+        String sortField = aiModelQueryRequest.getSortField();
+        String sortOrder = aiModelQueryRequest.getSortOrder();
+        QueryWrapper<AiModel> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(ObjectUtils.isNotEmpty(id),"id", id);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(userId),"userId", userId);
+        queryWrapper.like(StringUtils.isNotBlank(name),"name", name);
+        queryWrapper.eq(StringUtils.isNotBlank(type),"type", type);
+        queryWrapper.eq(StringUtils.isNotBlank(platform),"platform", platform);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(isFree),"isFree", isFree);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(isEnable),"isEnable", isEnable);
+        queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                sortField);
+        return queryWrapper;
     }
 
 }

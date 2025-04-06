@@ -1,6 +1,8 @@
 package com.rg.smarts.domain.aimodel.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rg.smarts.domain.aimodel.constant.LlmConstant;
 import com.rg.smarts.domain.aimodel.entity.AiModel;
 import com.rg.smarts.domain.aimodel.helper.LLMContext;
@@ -95,8 +97,10 @@ public class AiModelDomainServiceImpl implements AiModelDomainService {
         model.setIsEnable(1);
         aiModelRepository.updateById(model);
     }
-
-
+    @Override
+    public Page<AiModel> listAiModelByPage(Page<AiModel> aiModelPage, QueryWrapper<AiModel> queryWrapper) {
+        return aiModelRepository.page(aiModelPage, queryWrapper);
+    }
     /**
      * 普通聊天，将原始的用户问题及历史消息发送给AI
      */
