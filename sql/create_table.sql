@@ -132,3 +132,11 @@ CREATE TABLE knowledge_document (
    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
    isDelete    tinyint  default 0                 not null comment '是否删除'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='知识文档';
+# 数据初始化
+INSERT INTO sys_config (id, name, value, createTime, updateTime, isDelete) VALUES (1, 'openai_setting', '{"secret_key":""}', '2025-03-09 07:46:01', '2025-03-09 07:46:01', 0);
+INSERT INTO sys_config (id, name, value, createTime, updateTime, isDelete) VALUES (2, 'deepseek_setting', '{"base_url":"https://api.deepseek.com","secret_key":""}', '2025-03-09 07:46:24', '2025-03-10 13:35:15', 0);
+INSERT INTO sys_config (id, name, value, createTime, updateTime, isDelete) VALUES (3, 'ollama_setting', '"{base_url": ""}', '2025-03-09 07:46:37', '2025-04-08 12:47:53', 0);
+INSERT INTO sys_config (id, name, value, createTime, updateTime, isDelete) VALUES (4, 'zhipu_setting', '{"secret_key": ""}', '2025-03-09 15:47:10', '2025-03-09 07:47:17', 0);
+INSERT INTO user (id, userAccount, userPassword, userName, userAvatar, userRole, createTime, updateTime, isDelete) VALUES (1890713823228264450, 'rgadmin', '517e6f3f94ea33012dae009d7ecca3f3', 'rgadmin', '', 'admin', '2025-02-15 18:44:37', '2025-03-08 06:22:21', 0);
+INSERT INTO ai_model (id, userId, name, type, setting, remark, platform, maxInputTokens, maxOutputTokens, isFree, isEnable, createTime, updateTime, isDelete) VALUES (1, 1890713823228264450, 'GLM-4-Flash', 'text', '', '智普免费ai', 'zhipu', 61440, 4096, 1, 1, '2025-03-09 05:53:46', '2025-03-09 08:31:31', 0);
+
