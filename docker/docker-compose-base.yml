@@ -77,3 +77,27 @@ services:
       timeout: 10s
       retries: 120
     restart: on-failure
+  rabbitmq:
+    image: rabbitmq:3.12.2-management
+    container_name: bi_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=rrrrrrg1.
+      - TZ=Asia/Shanghai
+      - RABBITMQ_DISABLE_GUEST_USER=true
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq_logs:/var/log/rabbitmq
+    mem_limit: 2g
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "node_health_check" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "com.example.description=RabbitMQ message broker"
+      - "com.example.version=3.12.2"
